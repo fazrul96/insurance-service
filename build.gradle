@@ -1,0 +1,159 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import java.text.DecimalFormat
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'pmd'
+}
+
+group = 'com.insurance'
+version = project.hasProperty('version') ? project.getProperty('version') : '1.0.0'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
+
+    SWAGGER_ANNOTATIONS_VERSION = '2.2.20'
+    SPRINGDOC_OPENAPI_VERSION = '2.4.0'
+    LOMBOK_VERSION = '1.18.36'
+}
+
+ext['tess4j.version'] = '5.11.0'
+
+repositories {
+	mavenCentral()
+}
+
+configurations.configureEach {
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+}
+
+configurations {
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+    implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
+    implementation "org.projectlombok:lombok:${LOMBOK_VERSION}"
+
+    annotationProcessor "org.projectlombok:lombok:${LOMBOK_VERSION}"
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+jar {
+    enabled = false
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
+def activeProfiles = project.properties['activeProfiles'] ?: "prd"
+
+processResources {
+    filter ReplaceTokens, tokens: [
+            activeProfiles: activeProfiles
+    ]
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    reports {
+        html.required = true
+    }
+    outputs.dir snippetsDir
+    systemProperty'flyway.scripts.location', System.getProperty(
+            'flyway.scripts.location', 'filesystem:./src/test/resources/sql-scripts')
+    systemProperty "user.country", "MY"
+    systemProperty "user.language", "en"
+    systemProperty "user.timeznone", "Asia/Singapore"
+}
+
+checkstyle {
+    ignoreFailures = false
+    showViolations = true
+}
+
+pmd {
+    ignoreFailures = false
+    ruleSetFiles = files('config/pmd/java-rules.xml')
+    ruleSets = []
+    rulesMinimumPriority = 4
+    consoleOutput = true
+    toolVersion = '6.55.0'
+}
+
+pmdTest {
+    rulesMinimumPriority = 2
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.withType(Pmd) {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+jacocoTestReport {
+    dependsOn jacocoTestCoverageVerification
+    reports {
+        xml.required = true
+        csv.required = false
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    def minCov = findProperty('minCov') ?: '0.0'
+    DecimalFormat decimalFormat = new DecimalFormat('#')
+    def minimumCoverage = decimalFormat.parse(minCov).doubleValue()
+    violationRules {
+        failOnViolation = true
+        rule {
+            limit {
+                minimum = minimumCoverage
+            }
+        }
+    }
+    def exclusions = [
+            "**/*Application.*",
+            "**/dto/**",
+            "**/config/**",
+            "**/constants/**",
+            "**/properties/**",
+            "**/data/**",
+    ]
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, excludes: exclusions)
+        }))
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+task wrapperUpdate(type: Wrapper) {
+    gradleVersion = '8.7'
+}
