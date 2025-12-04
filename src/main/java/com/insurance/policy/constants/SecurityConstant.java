@@ -1,11 +1,12 @@
 package com.insurance.policy.constants;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SecurityConstant {
     public static final String SAMEORIGIN = "SAMEORIGIN";
     public static final List<String> ALLOWED_ORIGINS = CORS.ALLOWED_ORIGINS;
@@ -13,6 +14,7 @@ public final class SecurityConstant {
     public static final List<String> ALLOWED_HEADERS = CORS.ALLOWED_HEADERS;
     public static final String[] ADDITIONAL_PATHS;
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CORS {
         public static final String AUTHORIZATION = "Authorization";
         public static final String CONTENT_TYPE = "Content-Type";
@@ -44,6 +46,7 @@ public final class SecurityConstant {
         );
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class SWAGGER {
         public static final String[] PATHS = {
                 "/swagger-ui.html",

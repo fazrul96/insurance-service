@@ -1,100 +1,35 @@
 package com.insurance.policy.controller;
 
-import com.insurance.policy.constants.MessageConstants;
 import com.insurance.policy.dto.response.ApiResponseDto;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-import java.util.Collection;
+import java.util.UUID;
 
 /**
- * Abstract base controller to standardize API response formats across endpoints.
+ * Abstract base controller to provide unified API responses and helper utilities.
  * Not meant to be instantiated directly.
  */
-@SuppressWarnings({"PMD.AbstractClassWithoutAbstractMethod"})
+@NoArgsConstructor
 public abstract class BaseController {
-    protected BaseController() {
-
+    protected String getResponseMessage(HttpStatus httpStatus) {
+        return httpStatus.getReasonPhrase();
     }
 
-    /**
-     * Returns a 200 OK response with a generic body.
-     */
-    protected <T> ResponseEntity<T> success(T body) {
-        return ResponseEntity.ok(body);
+    protected String resolveRequestId(String requestId) {
+        return (requestId == null || requestId.isBlank())
+                ? UUID.randomUUID().toString()
+                : requestId;
     }
 
-    /**
-     * Returns a 201 Created response with a generic body.
-     */
-    protected <T> ResponseEntity<T> created(T body) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    protected <T> ApiResponseDto<T> getResponseMessage(String language, String channel, String requestId, HttpStatus httpStatus, String status, T response, String message) {
+        ApiResponseDto<T> apiResponse = new ApiResponseDto<>(requestId, channel, language);
+        apiResponse.buildResponse(response, httpStatus, status, getResponseMessage(httpStatus));
+        apiResponse.setMessage(message);
+        return apiResponse;
     }
 
-    /**
-     * Returns a 204 No Content response.
-     */
-    protected ResponseEntity<Void> noContent() {
-        return ResponseEntity.noContent().build();
-    }
-
-    /**
-     * Returns a 500 Internal Server Error with a simple message body.
-     */
-    protected ResponseEntity<String> error(String message) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
-    }
-
-    /**
-     * Returns a standardized API success response (200 OK).
-     */
-    protected <T> ResponseEntity<ApiResponseDto<T>> apiSuccess(String message, T data) {
-        return success(buildApiResponse(HttpStatus.OK, message, data));
-    }
-
-    /**
-     * Returns a standardized API created response (201 Created).
-     */
-    protected <T> ResponseEntity<ApiResponseDto<T>> apiCreated(String message, T data) {
-        return created(buildApiResponse(HttpStatus.CREATED, message, data));
-    }
-
-    /**
-     * Returns a standardized API error response with the specified status code.
-     */
-    protected <T> ResponseEntity<ApiResponseDto<T>> apiError(String message, HttpStatus status) {
-        return ResponseEntity.status(status).body(
-                new ApiResponseDto<>(
-                        MessageConstants.ResponseMessages.FAILURE,
-                        status.value(),
-                        message,
-                        null
-                )
-        );
-    }
-
-    private <T> ApiResponseDto<T> buildApiResponse(HttpStatus status, String message, T data) {
-        return new ApiResponseDto<>(
-                MessageConstants.ResponseMessages.SUCCESS,
-                status.value(),
-                message,
-                data
-        );
-    }
-
-    protected void validateRequiredParam(Object param, String fieldName) {
-        boolean isInvalid = false;
-
-        if (param == null) {
-            isInvalid = true;
-        } else if (param instanceof String && ((String) param).isBlank()) {
-            isInvalid = true;
-        } else if (param instanceof Collection && ((Collection<?>) param).isEmpty()) {
-            isInvalid = true;
-        }
-
-        if (isInvalid) {
-            throw new IllegalArgumentException(fieldName + " must not be null or empty");
-        }
+    protected <T> ApiResponseDto<T> getResponseMessage(String language, String channel, String requestId, HttpStatus httpStatus, String status, T response) {
+        return getResponseMessage(language, channel, requestId, httpStatus, status, response, null);
     }
 }

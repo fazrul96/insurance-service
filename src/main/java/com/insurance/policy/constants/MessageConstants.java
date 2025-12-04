@@ -1,6 +1,11 @@
 package com.insurance.policy.constants;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MessageConstants {
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class ResponseMessages {
         public static final String SUCCESS = "Success";
         public static final String ERROR = "Error";
@@ -11,6 +16,7 @@ public class MessageConstants {
         public static final String DELETE_SUCCESS = "Deleted successfully!";
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class HttpCodes {
         public static final String OK = "200";
         public static final String CREATED = "201";
@@ -24,6 +30,7 @@ public class MessageConstants {
         public static final String INTERNAL_SERVER_ERROR = "500";
     }
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class HttpDescription {
         public static final String OK_DESC = "Request successful";
         public static final String CREATED_DESC = "Successfully created";
@@ -35,5 +42,13 @@ public class MessageConstants {
         public static final String CONFLICT_DESC = "Conflict occurred";
         public static final String UNPROCESSABLE_ENTITY_DESC = "Unprocessable input";
         public static final String INTERNAL_ERROR_DESC = "Unexpected error occurred";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class Parameter {
+        public static final String REQUEST = "request";
+        public static final String REQUEST_ID = "requestId";
+        public static final String LANGUAGE = "language";
+        public static final String CHANNEL = "channel";
     }
 }

@@ -1,10 +1,11 @@
 package com.insurance.policy.constants;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GeneralConstant {
     public static final String COLON = ":";
     public static final String SLASH = "/";
@@ -43,6 +44,19 @@ public final class GeneralConstant {
     public static final String SUCCESS = "SUCCESS";
     public static final String COMPLETED = "COMPLETED";
     public static final String FAILED = "FAILED";
-    public static final String PENDING = "PENDING";
+
     public static final String INPROGRESS = "INPROGRESS";
+
+    public static final int MAX_BENEFICIARIES = 2;
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public final class Language {
+        public static final String EN_US = "en_US";
+        public static final String IN_ID = "in_ID";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public final class LOG4j {
+        public static final String REQUEST_ID = "requestId";
+    }
 }
