@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface PolicyRepository extends JpaRepository<Policy,Long> {
-    @Query("SELECT p FROM Policy p JOIN p.user u WHERE u.userId = :userId")
+    @Query("SELECT DISTINCT p FROM Policy p WHERE p.user.userId = :userId")
     List<Policy> findByUserId(@Param("userId") String userId);
 }

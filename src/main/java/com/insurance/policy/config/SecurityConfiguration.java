@@ -98,13 +98,11 @@ public class SecurityConfiguration {
     }
 
     public void configureAuthorization(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize -> {
-            authorize
-                    .requestMatchers(ADDITIONAL_PATHS).permitAll()
-                    .requestMatchers(appProperties.getPublicApiPath() + DOUBLE_ASTERISKS).permitAll()
-                    .requestMatchers(appProperties.getPrivateApiPath() + DOUBLE_ASTERISKS).authenticated()
-                    .anyRequest().authenticated();
-        });
+        http.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(ADDITIONAL_PATHS).permitAll()
+                .requestMatchers(appProperties.getPublicApiPath() + DOUBLE_ASTERISKS).permitAll()
+                .requestMatchers(appProperties.getPrivateApiPath() + DOUBLE_ASTERISKS).authenticated()
+                .anyRequest().authenticated());
     }
 
     @Bean
