@@ -14,5 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TermsDeclarationResponseDto {
+    @Builder.Default
     private List<TermsDeclaration> terms = new ArrayList<>();
 }

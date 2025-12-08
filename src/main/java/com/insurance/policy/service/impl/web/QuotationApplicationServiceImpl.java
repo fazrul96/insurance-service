@@ -76,9 +76,8 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
 
         PersonDto person = request.getPersonDto();
         PlanInfoDto planInfo = request.getPlanInfoDto();
-
+        User user = userService.getUserByUserId(requestId, userId);
         Plan plan = planService.getPlan(requestId, planInfo.getId());
-        User user = userService.getUserByUserId(userId);
 
         QuotationApplication application = toQuotationApplication(person, planInfo, user, plan);
         return toQuotationApplicationResponse(createQuotation(application));
@@ -112,7 +111,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
                 .build();
     }
 
-    private QuotationApplicationResponseDto toQuotationApplicationResponse(QuotationApplication request) {
+    public QuotationApplicationResponseDto toQuotationApplicationResponse(QuotationApplication request) {
         return QuotationApplicationResponseDto.builder()
                 .id(request.getId())
                 .applicationStatus(request.getApplicationStatus())

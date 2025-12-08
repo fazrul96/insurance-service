@@ -21,11 +21,15 @@ public class NotificationRequestDto {
     public static NotificationRequestDto buildNotification(
             String userId, Long entityId, NotificationTemplate template
     ) {
+        String redirectUrl = entityId == null
+                ? template.pathPrefix
+                : template.pathPrefix + entityId;
+
         return NotificationRequestDto.builder()
                 .userId(userId)
                 .message(template.message)
                 .eventType(template.eventType)
-                .redirectUrl(template.pathPrefix + entityId)
+                .redirectUrl(redirectUrl)
                 .severity(template.severity)
                 .relatedEntityId(entityId)
                 .isRead(false)

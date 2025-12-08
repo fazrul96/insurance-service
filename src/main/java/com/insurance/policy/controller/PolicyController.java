@@ -3,7 +3,6 @@ package com.insurance.policy.controller;
 import com.insurance.policy.constants.ApiConstant;
 import com.insurance.policy.constants.GeneralConstant;
 import com.insurance.policy.constants.MessageConstants;
-import com.insurance.policy.dto.PolicyServicingDto;
 import com.insurance.policy.dto.QuotationApplicationRequestDto;
 import com.insurance.policy.dto.request.BeneficiaryRequestDto;
 import com.insurance.policy.dto.response.*;
@@ -109,96 +108,6 @@ public class PolicyController extends BaseController {
         }
     }
 
-    @Operation(summary = "Fetch policy with Id and quotation")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.INTERNAL_SERVER_ERROR, description = MessageConstants.HttpDescription.INTERNAL_ERROR_DESC)
-    })
-    @GetMapping(path = ApiConstant.INSURANCE.GET_POLICY_WITH_ID_AND_QUOTATION)
-    public ApiResponseDto<PolicyResponseDto> getPolicyWithIdAndQuotation(
-            @PathVariable Long id,
-            @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
-            @Parameter(
-                    name = "language",
-                    description = "Locale for response localization. Accepts en_US or in_ID."
-            ) final String language,
-            @RequestParam(value = "channel", required = false, defaultValue = "web")
-            @Parameter(
-                    name = "channel",
-                    description = "Source of request such as web or mobile.",
-                    example = "web"
-            ) final String channel,
-            @RequestParam(value = "requestId", required = false)
-            @Parameter(
-                    name = "requestId",
-                    description = "Unique identifier per request. Auto-generated if missing.",
-                    example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
-            ) String requestId
-    ) {
-        requestId = this.resolveRequestId(requestId);
-        log.info("[RequestId: {}] Starting PolicyController.getPolicyWithId()", requestId);
-
-        HttpStatus httpStatus = HttpStatus.OK;
-
-        try {
-            PolicyResponseDto response = policyService.getPolicyByIdAndQuotation(requestId, id);
-            return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
-        } catch (Exception e) {
-            log.info("[RequestId: {}] Execute LoginController.loginUser() ERROR {}",
-                    requestId, e.getMessage());
-            return getResponseMessage(language, channel, requestId, HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, null);
-        }
-    }
-
-    @Operation(summary = "Update policy with Id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
-        @ApiResponse(responseCode = MessageConstants.HttpCodes.BAD_REQUEST, description = MessageConstants.HttpDescription.BAD_REQUEST_DESC),
-        @ApiResponse(responseCode = MessageConstants.HttpCodes.INTERNAL_SERVER_ERROR, description = MessageConstants.HttpDescription.INTERNAL_ERROR_DESC)
-    })
-    @PatchMapping(path = ApiConstant.INSURANCE.GET_POLICY_WITH_ID)
-    public ApiResponseDto<QuotationApplicationResponseDto> updatePolicyWithId(
-        @PathVariable Long id,
-        @RequestHeader("userId") String userId,
-        @Valid @RequestBody
-        @Parameter(
-                name = "request",
-                description = "Payload containing policy servicing.",
-                required = true
-        ) final PolicyServicingDto request,
-        @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
-        @Parameter(
-                name = "language",
-                description = "Locale for response localization. Accepts en_US or in_ID."
-        ) final String language,
-        @RequestParam(value = "channel", required = false, defaultValue = "web")
-        @Parameter(
-                name = "channel",
-                description = "Source of request such as web or mobile.",
-                example = "web"
-        ) final String channel,
-        @RequestParam(value = "requestId", required = false)
-        @Parameter(
-                name = "requestId",
-                description = "Unique identifier per request. Auto-generated if missing.",
-                example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
-        ) String requestId
-    ) {
-        requestId = this.resolveRequestId(requestId);
-        log.info("[RequestId: {}] Starting PolicyController.updatePolicyWithId()", requestId);
-
-        HttpStatus httpStatus = HttpStatus.OK;
-
-        try {
-            QuotationApplicationResponseDto response = policyService.updatePolicy(id, request, userId);
-            return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
-        } catch (Exception e) {
-            log.info("[RequestId: {}] Execute PolicyController.updatePolicyWithId() ERROR {}",
-                    requestId, e.getMessage());
-            return getResponseMessage(language, channel, requestId, HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, null);
-        }
-    }
-
     @Operation(summary = "Create Application")
     @ApiResponses(value = {
         @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
@@ -286,7 +195,7 @@ public class PolicyController extends BaseController {
         HttpStatus httpStatus = HttpStatus.OK;
 
         try {
-            BeneficiaryResponseDto response = beneficiaryService.createBeneficiaries(requestId, request);
+            BeneficiaryResponseDto response = beneficiaryService.createBeneficiaries(requestId, userId, request);
             return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
         } catch (Exception e) {
             log.info("[RequestId: {}] Execute PolicyController.upsertAllBeneficiaries() ERROR {}",

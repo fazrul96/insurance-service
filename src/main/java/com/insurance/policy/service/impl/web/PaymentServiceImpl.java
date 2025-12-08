@@ -1,5 +1,6 @@
 package com.insurance.policy.service.impl.web;
 
+import com.insurance.policy.constants.GeneralConstant;
 import com.insurance.policy.constants.MessageConstants.ResponseMessages;
 import com.insurance.policy.data.entity.Payment;
 import com.insurance.policy.data.entity.QuotationApplication;
@@ -94,7 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
         return Payment.builder()
                 .paymentDate(new Date())
                 .paymentAmount(request.getPaymentAmount())
-                .paymentStatus(ResponseMessages.SUCCESS)
+                .paymentStatus(GeneralConstant.STATUS.COMPLETED)
                 .duration(request.getDuration())
                 .referenceNumber(generateReferenceNumber("T"))
                 .quotationApplication(request.getQuotationId())

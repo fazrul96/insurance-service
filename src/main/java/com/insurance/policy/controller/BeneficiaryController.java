@@ -180,7 +180,7 @@ public class BeneficiaryController extends BaseController {
     })
     @PostMapping(path = ApiConstant.INSURANCE.BENEFICIARY_LIST_CREATE)
     public ApiResponseDto<BeneficiaryResponseDto> createBeneficiaries(
-            @RequestHeader("userId") Long userId,
+            @RequestHeader("userId") String userId,
             @Valid @RequestBody
             @Parameter(
                     name = "request",
@@ -211,7 +211,7 @@ public class BeneficiaryController extends BaseController {
         HttpStatus httpStatus = HttpStatus.OK;
 
         try {
-            BeneficiaryResponseDto response = beneficiaryService.createBeneficiaries(requestId, request);
+            BeneficiaryResponseDto response = beneficiaryService.createBeneficiaries(requestId, userId, request);
             return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
         } catch (Exception e) {
             logRequest(requestId, BENEFICIARY_CONTROLLER_POST_BENEFICIARIES, e);

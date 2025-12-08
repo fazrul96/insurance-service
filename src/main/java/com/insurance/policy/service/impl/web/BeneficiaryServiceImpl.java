@@ -54,7 +54,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         return beneficiaryRepository.save(request);
     }
 
-    public BeneficiaryResponseDto createBeneficiaries(String requestId, BeneficiaryRequestDto request)
+    public BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request)
             throws WebException {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.createBeneficiaries()", requestId);
 
@@ -80,7 +80,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
             }
         }
 
-        notificationService.notifyUser(buildNotification("", 1L, BENEFICIARY_CREATED));
+        notificationService.notifyUser(buildNotification(userId, null, BENEFICIARY_CREATED));
         return mapBeneficiaryResponseDto(request);
     }
 

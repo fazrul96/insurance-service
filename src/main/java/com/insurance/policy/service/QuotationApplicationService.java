@@ -17,4 +17,5 @@ public interface QuotationApplicationService {
 
     QuotationApplication createQuotation(QuotationApplication application);
     QuotationApplicationResponseDto processQuotation(String requestId, String userId, QuotationApplicationRequestDto request) throws WebException;
+    QuotationApplicationResponseDto toQuotationApplicationResponse(QuotationApplication request);
 }

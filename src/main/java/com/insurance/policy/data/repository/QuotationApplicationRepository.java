@@ -18,7 +18,7 @@ public interface QuotationApplicationRepository extends JpaRepository<QuotationA
         SELECT DISTINCT qa.*
         FROM quotation_application qa
         JOIN users u ON qa.user_id = u.id
-        WHERE u.id = :userId
+        WHERE u.user_id = :userId
     """, nativeQuery = true)
     List<QuotationApplication> findByUserId(@Param("userId") String userId);
 }

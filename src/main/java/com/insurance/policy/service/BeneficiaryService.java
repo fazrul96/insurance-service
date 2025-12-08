@@ -11,7 +11,7 @@ public interface BeneficiaryService {
     BeneficiaryListResponseDto getBeneficiariesByPolicyNo(String requestId, String policyNo);
     BeneficiaryListResponseDto getBeneficiariesByPolicyId (String requestId, Long id);
 
-    BeneficiaryResponseDto createBeneficiaries(String requestId, BeneficiaryRequestDto request) throws WebException;
+    BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request) throws WebException;
     Beneficiary createBeneficiary(String requestId, Beneficiary request);
 
     void validateMaxCount(int activeCount) throws WebException;
