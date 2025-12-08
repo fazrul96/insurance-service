@@ -40,11 +40,6 @@ public final class GeneralConstant {
 
     public static final String CHAPTER_SEPARATOR = "-chapter-";
 
-    public static final String DEFAULT = "DEFAULT";
-    public static final String SUCCESS = "SUCCESS";
-    public static final String COMPLETED = "COMPLETED";
-    public static final String FAILED = "FAILED";
-
     public static final String INPROGRESS = "INPROGRESS";
 
     public static final int MAX_BENEFICIARIES = 2;
@@ -58,5 +53,33 @@ public final class GeneralConstant {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public final class LOG4j {
         public static final String REQUEST_ID = "requestId";
+
+        public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES = "BeneficiaryController.getBeneficiaries";
+        public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES_BY_POLICY_NO = "BeneficiaryController.getBeneficiariesByPolicyNo";
+        public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES_BY_POLICY_ID = "BeneficiaryController.getBeneficiariesByPolicyId";
+        public static final String BENEFICIARY_CONTROLLER_POST_BENEFICIARIES = "BeneficiaryController.getBeneficiariesByPolicyId";
+
+        public static final String BENEFICIARY_SERVICE_UPSERT_ALL = "BeneficiaryServiceImpl.upsertAll";
+
+        public static final String QUOTATION_CONTROLLER_GET_QUOTATION = "QuotationController.getQuotation";
+        public static final String QUOTATION_SERVICE_CREATE = "QuotationServiceImpl.createQuotation";
+
+        public static final String POLICY_CONTROLLER_GET_POLICY = "PolicyController.getPolicy";
+        public static final String POLICY_SERVICE_CREATE_POLICY = "PolicyServiceImpl.createPolicy";
+
+        public static final String PLAN_CONTROLLER_GET_PLAN = "PlanController.getPlan";
+        public static final String PLAN_SERVICE_CREATE_PLAN = "PlanServiceImpl.createPlan";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public final class STATUS {
+        public static final String DEFAULT = "DEFAULT";
+        public static final String PENDING = "PENDING";
+        public static final String SUCCESS = "SUCCESS";
+        public static final String COMPLETED = "COMPLETED";
+        public static final String FAILED = "FAILED";
+        public static final String ACTIVE = "ACTIVE";
+        public static final String CANCELLED = "CANCELLED";
+        public static final String EXPIRED = "EXPIRED";
     }
 }

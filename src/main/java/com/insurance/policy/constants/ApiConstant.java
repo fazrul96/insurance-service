@@ -12,15 +12,32 @@ public class ApiConstant {
         public static final String GET_TERMS = "terms";
         public static final String GET_POLICIES = "policy/getAll";
         public static final String GET_POLICY_WITH_ID = "policy/{id}";
+        public static final String GET_POLICY_WITH_ID_AND_QUOTATION = "policy/quotation/{id}";
         public static final String CREATE_APPLICATION = "policy/create-application";
         public static final String CREATE_BENEFICIARIES = "policy/beneficiary";
-        public static final String PAYMENT = "payment/handle-payment";
         public static final String GET_NOTIFICATIONS = "notifications/getAll";
+
+        public static final String BASE_QUOTATION = "quotation";
+        public static final String QUOTATION_LIST = BASE_QUOTATION + "/list";
+        public static final String QUOTATION_LIST_WITH_STATUS = BASE_QUOTATION + "/list/status/{status}";
+        public static final String QUOTATION_LIST_WITH_USER_ID = BASE_QUOTATION + "/list/user/{userId}";
+        public static final String QUOTATION_LIST_WITH_ID = BASE_QUOTATION + "/{id}";
+
+        public static final String BASE_BENEFICIARY = "beneficiary";
+        public static final String BENEFICIARY_LIST = BASE_BENEFICIARY + "/list";
+        public static final String BENEFICIARY_LIST_WITH_POLICY_NO = BASE_BENEFICIARY + "/list/{policyNo}";
+        public static final String BENEFICIARY_LIST_WITH_POLICY_ID = BASE_BENEFICIARY + "/list/policy/{policyId}";
+        public static final String BENEFICIARY_LIST_CREATE = BASE_BENEFICIARY + "/list/create";
 
         public static final String BASE_AUTH = "auth";
         public static final String SIGNUP = BASE_AUTH + "/signup";
         public static final String LOGIN = BASE_AUTH + "/login";
         public static final String LOGIN_AUTH0 = BASE_AUTH + "/loginAuth0";
+
+        public static final String BASE_PAYMENT = "payment";
+        public static final String PAYMENT_LIST = BASE_PAYMENT + "/list";
+        public static final String PAYMENT_LIST_WITH_STATUS = BASE_PAYMENT + "/list/status/{status}";
+        public static final String PAYMENT_PROCESS = BASE_PAYMENT + "/process";
 
         public static final String BASE_CLAIM = "claim";
         public static final String CLAIM_LIST = BASE_CLAIM + "/list";

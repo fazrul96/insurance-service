@@ -1,12 +1,11 @@
 package com.insurance.policy.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.insurance.policy.data.BaseModel;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.Date;
 
@@ -16,6 +15,9 @@ import static com.insurance.policy.constants.ModelConstant.Tables;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = Tables.POLICY)
 public class Policy extends BaseModel {
     @Id
@@ -38,22 +40,24 @@ public class Policy extends BaseModel {
 
     @Column(name = Columns.STATUS)
     @JsonProperty(Columns.STATUS)
-    private String status; // ACTIVE / CANCELLED / EXPIRED
+    private String status;
 
-    @ManyToOne
-    @JoinColumn(name = Columns.PLAN_ID)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = Columns.PLAN_ID, referencedColumnName = Columns.PLAN_ID)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Plan plan;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = Columns.USER_ID)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = Columns.PAYMENT_ID)
-    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Payment payment;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = Columns.QUOTATION_ID, referencedColumnName = Columns.QUOTATION_ID, unique = true)
     @JsonManagedReference
     private QuotationApplication quotationApplication;

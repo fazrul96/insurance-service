@@ -18,7 +18,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     public void notifyUser(NotificationRequestDto request) {
-        Notification notification = mapNotification(request);
+        Notification notification = toNotification(request);
         notificationRepository.save(notification);
     }
 
@@ -29,17 +29,16 @@ public class NotificationServiceImpl implements NotificationService {
         return new NotificationResponseDto(response);
     }
 
-    private Notification mapNotification(NotificationRequestDto request) {
-        Notification notification = new Notification();
-        notification.setUserId(request.getUserId());
-        notification.setMessage(request.getMessage());
-        notification.setRead(false);
-        notification.setActionType(request.getActionType());
-        notification.setRedirectUrl(request.getRedirectUrl());
-        notification.setNotificationType(request.getNotificationType());
-        notification.setRelatedEntityId(request.getRelatedEntityId());
-        notification.setStatus("UNREAD");
-
-        return notification;
+    private Notification toNotification(NotificationRequestDto request) {
+        return Notification.builder()
+                .userId(request.getUserId())
+                .message(request.getMessage())
+                .isRead(request.isRead())
+                .actionType(request.getEventType().toString())
+                .redirectUrl(request.getRedirectUrl())
+                .notificationType(request.getSeverity().toString())
+                .relatedEntityId(request.getRelatedEntityId())
+                .status(request.getStatus())
+                .build();
     }
 }

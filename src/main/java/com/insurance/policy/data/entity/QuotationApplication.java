@@ -1,12 +1,9 @@
 package com.insurance.policy.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.insurance.policy.data.BaseModel;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -17,6 +14,9 @@ import static com.insurance.policy.constants.ModelConstant.Tables;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = Tables.QUOTATION_APPLICATION)
 public class QuotationApplication extends BaseModel {
     @Id
@@ -117,11 +117,11 @@ public class QuotationApplication extends BaseModel {
     @JoinColumn(name = Columns.USER_ID)
     private User user;
 
-    @OneToOne(mappedBy = Columns.QUOTATIONAPPLICATION)
-    @JsonIgnore
-    private Payment payment;
-
-    @OneToOne(mappedBy = Columns.QUOTATIONAPPLICATION)
-    @JsonBackReference //do not serialize (used to break loop)
-    private Policy policy;
+//    @OneToOne(mappedBy = Columns.QUOTATIONAPPLICATION)
+//    @JsonIgnore
+//    private Payment payment;
+//
+//    @OneToOne(mappedBy = Columns.QUOTATIONAPPLICATION)
+//    @JsonBackReference //do not serialize (used to break loop)
+//    private Policy policy;
 }

@@ -1,11 +1,9 @@
 package com.insurance.policy.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.insurance.policy.data.BaseModel;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -16,6 +14,9 @@ import static com.insurance.policy.constants.ModelConstant.Tables;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = Tables.PAYMENT)
 public class Payment extends BaseModel {
     @Id
@@ -44,8 +45,11 @@ public class Payment extends BaseModel {
     @JsonProperty(Columns.REFERENCE_NUMBER)
     private String referenceNumber;
 
-    @OneToOne
-    @JoinColumn(name = Columns.QUOTATION_APPLICATION_ID, referencedColumnName = Columns.QUOTATION_ID, unique = true)
-    @JsonIgnore
-    private QuotationApplication quotationApplication;
+    @Column(name = Columns.QUOTATION_APPLICATION_ID)
+    private Long quotationApplication;
+
+//    @OneToOne
+//    @JoinColumn(name = Columns.QUOTATION_APPLICATION_ID, referencedColumnName = Columns.QUOTATION_ID, unique = true)
+//    @JsonIgnore
+//    private QuotationApplication quotationApplication;
 }

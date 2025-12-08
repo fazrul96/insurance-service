@@ -1,0 +1,11 @@
+package com.insurance.policy.util.enums;
+
+public enum NotificationEventType {
+    PAYMENT_SUCCESS,
+    PAYMENT_FAILED,
+    POLICY_CREATED,
+    POLICY_UPDATED,
+    BENEFICIARY_UPDATED,
+    BENEFICIARY_CREATED,
+    QUOTATION_STATUS_CHANGED
+}

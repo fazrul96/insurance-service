@@ -1,10 +1,10 @@
 package com.insurance.policy.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.insurance.policy.data.BaseModel;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import static com.insurance.policy.constants.ModelConstant.Columns;
 import static com.insurance.policy.constants.ModelConstant.Tables;
@@ -12,6 +12,9 @@ import static com.insurance.policy.constants.ModelConstant.Tables;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = Tables.BENEFICIARY)
 public class Beneficiary extends BaseModel {
     @Id
@@ -20,9 +23,9 @@ public class Beneficiary extends BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = Columns.POLICY_ID, referencedColumnName = Columns.POLICY_ID)
-    private Policy policy;
+    @Column(name = Columns.POLICY_ID)
+    @JsonProperty(Columns.POLICY_ID)
+    private Long policyId;
 
     @Column(name = Columns.BENEFICIARY_NAME)
     @JsonProperty(Columns.BENEFICIARY_NAME)

@@ -1,5 +1,8 @@
 package com.insurance.policy.dto.request;
 
+import com.insurance.policy.util.enums.NotificationEventType;
+import com.insurance.policy.util.enums.NotificationSeverity;
+import com.insurance.policy.util.enums.NotificationTemplate;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,21 +11,25 @@ import lombok.Data;
 public class NotificationRequestDto {
     private String userId;
     private String message;
-    private String actionType;
+    private NotificationEventType eventType;
+    private NotificationSeverity severity;
     private String redirectUrl;
-    private String notificationType;
     private Long relatedEntityId;
+    private boolean isRead;
+    private String status;
 
-    public static NotificationRequestDto generic(
-            String userId, String message, String actionType, String redirectUrl, String notificationType, Long id
+    public static NotificationRequestDto buildNotification(
+            String userId, Long entityId, NotificationTemplate template
     ) {
         return NotificationRequestDto.builder()
                 .userId(userId)
-                .message(message)
-                .actionType(actionType)
-                .redirectUrl(redirectUrl)
-                .notificationType(notificationType)
-                .relatedEntityId(id)
+                .message(template.message)
+                .eventType(template.eventType)
+                .redirectUrl(template.pathPrefix + entityId)
+                .severity(template.severity)
+                .relatedEntityId(entityId)
+                .isRead(false)
+                .status("NEW")
                 .build();
     }
 }

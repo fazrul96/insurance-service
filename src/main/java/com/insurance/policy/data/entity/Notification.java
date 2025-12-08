@@ -2,14 +2,16 @@ package com.insurance.policy.data.entity;
 
 import com.insurance.policy.data.BaseModel;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import static com.insurance.policy.constants.ModelConstant.Tables;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = Tables.NOTIFICATION)
 public class Notification extends BaseModel {
     @Id
