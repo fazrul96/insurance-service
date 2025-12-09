@@ -27,8 +27,6 @@ public final class GeneralConstant {
     public static final String TYPE_KEY = "type";
     public static final String ORIGINAL_NAME_KEY = "originalName";
 
-    public static final String WEBTOONS = "Webtoons";
-
     public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -38,20 +36,16 @@ public final class GeneralConstant {
     public static final String FORCE_DOWNLOAD_CONTENT_TYPE = "application/force-download";
     public static final String OCTET_STREAM_CONTENT_TYPE = "application/octet-stream";
 
-    public static final String CHAPTER_SEPARATOR = "-chapter-";
-
-    public static final String INPROGRESS = "INPROGRESS";
-
     public static final int MAX_BENEFICIARIES = 2;
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public final class Language {
+    public static final class Language {
         public static final String EN_US = "en_US";
         public static final String IN_ID = "in_ID";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public final class LOG4j {
+    public static final class LOG4j {
         public static final String REQUEST_ID = "requestId";
 
         public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES = "BeneficiaryController.getBeneficiaries";
@@ -72,7 +66,7 @@ public final class GeneralConstant {
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public final class STATUS {
+    public static final class STATUS {
         public static final String DEFAULT = "DEFAULT";
         public static final String PENDING = "PENDING";
         public static final String SUCCESS = "SUCCESS";
@@ -81,5 +75,6 @@ public final class GeneralConstant {
         public static final String ACTIVE = "ACTIVE";
         public static final String CANCELLED = "CANCELLED";
         public static final String EXPIRED = "EXPIRED";
+        public static final String IN_PROGRESS = "IN-PROGRESS";
     }
 }

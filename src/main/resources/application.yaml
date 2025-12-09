@@ -1,14 +1,35 @@
 spring:
   application:
-    name: insurance0service
+    name: insurance-service
   profiles:
     active: ${ACTIVE_PROFILE:@activeProfiles@}
+  datasource:
+    jdbc-url: ${DATASOURCE_INSURANCE_JDBC_URL_BASE}
+    username: ${DATASOURCE_INSURANCE_DB_APP_USERNAME}
+    password: ${DATASOURCE_INSURANCE_DB_APP_PASSWORD}
+    connection-timeout: ${DATASOURCE_CONN_TIMEOUT}
+    maximum-pool-size: ${DATASOURCE_READER_POOL_SIZE}
+    idle-timeout: ${DATASOURCE_READER_POOL_IDLE_TIMEOUT}
+    minimum-idle: ${DATASOURCE_READER_POOL_MINIMUM_IDLE}
+    max-lifetime: ${DATASOURCE_MAX_LIFETIME}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   config:
 #    import: file:/app/common-config/spring-boot/${spring.profiles.active}/deployment.properties
     import: file:C:\\Users\\ICAM\\workspace\\common-config\\spring-boot\\local\\deployment.properties
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+aws:
+  access-key: ${AWS_ACCESS_KEY}
+  secret-key: ${AWS_SECRET_KEY}
+  bucket-name: ${AWS_BUCKET_NAME}
+  region: ${AWS_REGION:ap-southeast-1}
+  root-folder: ${AWS_S3_ROOT_FOLDER}
 logging:
   level:
-#    com.example.demo: ${LOGGING_LEVEL_APP_DEMO}
+#    com.insurance.policy: ${LOGGING_LEVEL_APP_DEMO}
     org.springframework.web: ${LOGGING_LEVEL_APP_WEB}
     org.springframework.security: ${LOGGING_LEVEL_APP_SECURITY}
     org.springframework.web.cors: ${LOGGING_LEVEL_APP_WEB_CORS}
@@ -19,7 +40,7 @@ logging:
     org.springframework.batch: ERROR
     root: ${LOGGING_LEVEL_APP_ROOT}
 server:
-  port: 8080
+  port: 8082
   address: 0.0.0.0
 springdoc:
   api-docs:
@@ -35,6 +56,10 @@ management:
     web:
       exposure:
         include: health, info, caches
+storage-service:
+  base-url: http://localhost:8084
+  endpoints:
+    upload: /s3/uploadFiles
 app:
   basePath: ${APP_REACT_BASE_PATH}
   base-flask-path: ${APP_FLASK_BASE_PATH}

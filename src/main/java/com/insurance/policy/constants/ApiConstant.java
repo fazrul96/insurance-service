@@ -48,6 +48,12 @@ public class ApiConstant {
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class S3 {
+        public static final String BASE = "s3";
+        public static final String UPLOAD_FILES = BASE + "/uploadFiles";
+    }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class AUTH0 {
         public static final String AUTHORIZE_URL = "authorize";
         public static final String DEVICE_AUTHORIZATION_URL = "oauth/device/code";
