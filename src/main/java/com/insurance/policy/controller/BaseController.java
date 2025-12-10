@@ -155,11 +155,11 @@ public abstract class BaseController {
      * @param requestId The unique request ID for tracking.
      * @param methodName The name of the method that is being executed.
      */
-    protected void logRequest(String requestId, String methodName) {
+    public void logRequest(String requestId, String methodName) {
         log.info("[RequestId: {}] Execute {}", requestId, methodName);
     }
 
-    protected void logRequest(String requestId, String methodName, Exception e) {
+    public void logRequest(String requestId, String methodName, Exception e) {
         log.error("[RequestId: {}] Execute {} ERROR: {}", requestId, methodName, e.getMessage());
     }
 }
