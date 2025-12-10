@@ -59,6 +59,17 @@ public class PolicyServiceImpl implements PolicyService {
         return new PolicySummaryResponseDto(policies);
     }
 
+    public PolicySummaryResponseDto getPolicyByUserKey(String requestId, String userId) {
+        log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyByUserKey()", requestId);
+
+        List<PolicyResponseDto> policies = policyRepository.findByUserKey(userId)
+                .stream()
+                .map(this::toPolicyResponse)
+                .toList();
+
+        return new PolicySummaryResponseDto(policies);
+    }
+
     public PolicyResponseDto getPolicyById(String requestId, Long id) throws WebException {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyById()", requestId);
         Policy policy = policyRepository.findById(id)

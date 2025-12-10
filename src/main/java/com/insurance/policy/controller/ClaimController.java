@@ -49,7 +49,7 @@ public class ClaimController extends BaseController {
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_POLICY_DOC)
     public ApiResponseDto<ClaimInfoResponse> getPolicyDocuments(RequestContext context) {
         logRequest(context.getRequestId(), "ClaimController.getPolicyDocuments()");
-        return handleRequest(context, () -> claimService.getClaimInfoByUserId(context.getUserId()));
+        return handleRequest(context, () -> claimService.getClaimInfoByUserId(context.getRequestId(), context.getUserId()));
     }
 
     @Operation(summary = "Submit a new insurance claim with attached documents.")

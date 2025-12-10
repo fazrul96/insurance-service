@@ -2,7 +2,10 @@ package com.insurance.policy.service.impl.web;
 
 import com.insurance.policy.constants.GeneralConstant;
 import com.insurance.policy.data.entity.*;
-import com.insurance.policy.data.repository.*;
+import com.insurance.policy.data.repository.ClaimDocumentRepository;
+import com.insurance.policy.data.repository.ClaimRepository;
+import com.insurance.policy.data.repository.ClaimTypeRepository;
+import com.insurance.policy.data.repository.DocumentTypeRepository;
 import com.insurance.policy.dto.response.*;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.ClaimService;
@@ -46,13 +49,12 @@ import static com.insurance.policy.util.enums.NotificationTemplate.CLAIM_UPLOAD_
         "PMD.AvoidInstantiatingObjectsInLoops",
         "PMD.AvoidThrowingNullPointerException"})
 public class ClaimServiceImpl implements ClaimService {
-    private final ClaimTypeRepository claimTypeRepository;
-    private final PolicyServiceImpl policyService;
     private final ClaimRepository claimRepository;
-    private final ClaimTypeServiceImpl claimTypeService;
+    private final ClaimTypeRepository claimTypeRepository;
     private final ClaimDocumentRepository claimDocumentRepository;
-    private final UserRepository userRepository;
     private final DocumentTypeRepository documentTypeRepository;
+    private final PolicyServiceImpl policyService;
+    private final ClaimTypeServiceImpl claimTypeService;
     private final UserServiceImpl userService;
     private final StorageClientServiceImpl storageClientService;
     private final NotificationService notificationService;
@@ -97,58 +99,56 @@ public class ClaimServiceImpl implements ClaimService {
         return new ByteArrayResource(data);
     }
 
-    public ClaimInfoResponse getClaimInfoByUserId(String userId) {
-        try {
-            // Check if user exists
-            Optional<User> userOptional = userRepository.findByUserId(userId);
-            if (userOptional.isPresent()) {
+    public ClaimInfoResponse getClaimInfoByUserId(String requestId, String userId) throws WebException {
+        log.info("[RequestId: {}] Execute ClaimServiceImpl.getClaimInfoByUserId()", requestId);
 
-                log.info("User found: {}", userOptional.get().getUsername());
+        userService.getUserByUserId(requestId, userId);
 
-                //Get policy IDs
-//                List<Policy> policy = policyRepository.findByUserId(String.valueOf(userId));
-                List<Policy> policy = null;
-                List<Map<String,String>> policyInfo = new ArrayList<>();
-                for (Policy p : policy) {
+        List<Map<String, String>> policyInfo = buildPolicyInfo(userId, requestId);
+        List<ClaimInfoResponse.ClaimPolicyDocument> claimDocuments = buildClaimPolicyDocuments();
 
-                    Map<String, String> policyMap = new HashMap<>();
-                    policyMap.put("policyId",String.valueOf(p.getId()) );
-                    policyMap.put("policyNo", p.getPolicyNo());
-                    policyInfo.add(policyMap);
-                }
-                log.info("List of policy info: {}", policyInfo);
+        return toClaimInfoResponse(policyInfo, claimDocuments);
+    }
 
-                // Get claim type & required documents
-                List<Object[]> rows = claimTypeRepository.getClaimTypesWithDocuments();
+    private List<Map<String, String>> buildPolicyInfo(String userId, String requestId) throws WebException {
+        PolicySummaryResponseDto policySummary = policyService.getPolicyByUserKey(requestId, userId);
 
-                Map<Long, ClaimInfoResponse.ClaimPolicyDocument> claimMap = new LinkedHashMap<>();
+        return policySummary.getPolicies().stream()
+                .map(policy -> Map.of(
+                        "policyId", String.valueOf(policy.getId()),
+                        "policyNo", policy.getPolicyNo()
+                ))
+                .toList();
+    }
 
-                for (Object[] row : rows) {
-                    Long claimTypeId = (Long) row[0];
-                    String claimType = (String) row[1];
-                    String claimDescription = (String) row[2];
-                    String documentName = (String) row[3];
-                    claimMap.computeIfAbsent(claimTypeId, id -> {
-                        ClaimInfoResponse.ClaimPolicyDocument doc = new ClaimInfoResponse.ClaimPolicyDocument();
-                        doc.setClaimTypeId(id);
-                        doc.setClaimTypeName(claimType);
-                        doc.setClaimDescription(claimDescription);
-                        doc.setRequiredDocuments(new ArrayList<>());
-                        return doc;
-                    }).getRequiredDocuments().add(documentName);
-                }
+    private List<ClaimInfoResponse.ClaimPolicyDocument> buildClaimPolicyDocuments() {
+        List<Object[]> rows = claimTypeRepository.getClaimTypesWithDocuments();
+        Map<Long, ClaimInfoResponse.ClaimPolicyDocument> map = new LinkedHashMap<>();
 
-                ClaimInfoResponse response = new ClaimInfoResponse();
-                response.setPolicyInfo(policyInfo);
-                response.setClaimPolicyDocument(new ArrayList<>(claimMap.values()));
-                return response;
-            } else {
-                throw new RuntimeException("User not found");
-            }
-        } catch (Exception e) {
-            log.error("Error fetching claim info: {}", e.getMessage());
-            throw new RuntimeException("Error fetching claim info: " + e.getMessage());
+        for (Object[] row : rows) {
+            Long claimTypeId = (Long) row[0];
+            String claimType = (String) row[1];
+            String claimDescription = (String) row[2];
+            String documentName = (String) row[3];
+
+            map.computeIfAbsent(claimTypeId, id -> {
+                ClaimInfoResponse.ClaimPolicyDocument doc = new ClaimInfoResponse.ClaimPolicyDocument();
+                doc.setClaimTypeId(id);
+                doc.setClaimTypeName(claimType);
+                doc.setClaimDescription(claimDescription);
+                doc.setRequiredDocuments(new ArrayList<>());
+                return doc;
+            }).getRequiredDocuments().add(documentName);
         }
+
+        return new ArrayList<>(map.values());
+    }
+
+    private ClaimInfoResponse toClaimInfoResponse(List<Map<String,String>> policyInfo, List<ClaimInfoResponse.ClaimPolicyDocument> claimDocuments) {
+        return ClaimInfoResponse.builder()
+                .policyInfo(policyInfo)
+                .claimPolicyDocument(claimDocuments)
+                .build();
     }
 
     public ClaimResponseDto getClaimDetailsByClaimId(Long claimId) throws WebException {

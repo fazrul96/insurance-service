@@ -10,6 +10,7 @@ import com.insurance.policy.exception.WebException;
 public interface PolicyService {
     PolicySummaryResponseDto getAllPolicies(String requestId);
     PolicySummaryResponseDto getPolicyByUserId(Long userId, String requestId);
+    PolicySummaryResponseDto getPolicyByUserKey(String requestId, String userId) throws WebException;
     PolicyResponseDto getPolicyById(String requestId, Long id) throws WebException;
 
     PolicyResponseDto constructApplicationAndBeneficiaryResponse(Policy policy);
