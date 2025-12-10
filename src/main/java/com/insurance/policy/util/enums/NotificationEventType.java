@@ -9,4 +9,5 @@ public enum NotificationEventType {
     BENEFICIARY_CREATED,
     QUOTATION_STATUS_CHANGED,
     QUOTATION_CREATED,
+    CLAIM_UPLOAD_SUCCESS,
 }

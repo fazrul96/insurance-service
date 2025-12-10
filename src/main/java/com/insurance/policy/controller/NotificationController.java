@@ -1,21 +1,18 @@
 package com.insurance.policy.controller;
 
+import com.insurance.policy.config.swagger.DefaultApiResponses;
 import com.insurance.policy.constants.ApiConstant;
-import com.insurance.policy.constants.GeneralConstant;
-import com.insurance.policy.constants.MessageConstants;
+import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.NotificationResponseDto;
 import com.insurance.policy.service.impl.web.NotificationServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "${app.privateApiPath}")
@@ -24,44 +21,12 @@ public class NotificationController extends BaseController {
     private final NotificationServiceImpl notificationServiceImpl;
 
     @Operation(summary = "Fetch all notifications for the authenticated user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.BAD_REQUEST, description = MessageConstants.HttpDescription.BAD_REQUEST_DESC),
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.INTERNAL_SERVER_ERROR, description = MessageConstants.HttpDescription.INTERNAL_ERROR_DESC)
-    })
+    @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_NOTIFICATIONS)
-    public ApiResponseDto<NotificationResponseDto>getAllNotifications(
-        @RequestHeader("userId") String userId,
-        @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
-        @Parameter(
-                name = "language",
-                description = "Locale for response localization. Accepts en_US or in_ID."
-        ) final String language,
-        @RequestParam(value = "channel", required = false, defaultValue = "web")
-        @Parameter(
-                name = "channel",
-                description = "Source of request such as web or mobile.",
-                example = "web"
-        ) final String channel,
-        @RequestParam(value = "requestId", required = false)
-        @Parameter(
-                name = "requestId",
-                description = "Unique identifier per request. Auto-generated if missing.",
-                example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
-        ) String requestId
-    ) {
-        requestId = this.resolveRequestId(requestId);
-        log.info("[RequestId: {}] Starting NotificationController.getAllNotifications()", requestId);
-
-        HttpStatus httpStatus = HttpStatus.OK;
-
-        try {
-            NotificationResponseDto response = notificationServiceImpl.getUserNotifications(userId, requestId);
-            return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
-        } catch (Exception e) {
-            log.info("[RequestId: {}] Execute NotificationController.getAllNotifications() ERROR {}",
-                    requestId, e.getMessage());
-            return getResponseMessage(language, channel, requestId, HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, null);
-        }
+    public ApiResponseDto<NotificationResponseDto>getAllNotifications(RequestContext context) {
+        logRequest(context.getRequestId(), "NotificationController.getAllNotifications()");
+        return handleRequest(context, () -> notificationServiceImpl.getUserNotifications(
+                context.getUserId(), context.getRequestId())
+        );
     }
 }

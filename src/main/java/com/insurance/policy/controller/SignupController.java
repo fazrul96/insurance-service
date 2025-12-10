@@ -1,16 +1,16 @@
 package com.insurance.policy.controller;
 
+import com.insurance.policy.config.swagger.DefaultApiResponses;
 import com.insurance.policy.constants.ApiConstant;
 import com.insurance.policy.constants.GeneralConstant;
 import com.insurance.policy.constants.MessageConstants;
 import com.insurance.policy.data.entity.User;
+import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.SignupResponseDto;
 import com.insurance.policy.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,19 +26,16 @@ public class SignupController extends BaseController {
     private final AuthService authService;
 
     @Operation(summary = "Register a new user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.BAD_REQUEST, description = MessageConstants.HttpDescription.BAD_REQUEST_DESC),
-            @ApiResponse(responseCode = MessageConstants.HttpCodes.INTERNAL_SERVER_ERROR, description = MessageConstants.HttpDescription.INTERNAL_ERROR_DESC)
-    })
+    @DefaultApiResponses
     @PostMapping(path = ApiConstant.INSURANCE.SIGNUP)
     public ApiResponseDto<SignupResponseDto> registerUser(
-        @Valid @RequestBody
-        @Parameter(
-                name = "user",
-                description = "Payload containing username and password to login.",
-                required = true
-        ) final User request,
+            RequestContext context,
+            @Valid @RequestBody
+            @Parameter(
+                    name = "user",
+                    description = "Payload containing username and password to login.",
+                    required = true
+            ) final User request,
         @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
         @Parameter(
                 name = "language",
@@ -57,7 +54,7 @@ public class SignupController extends BaseController {
                 example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
         ) String requestId
     ) {
-        requestId = this.resolveRequestId(requestId);
+        requestId = resolveRequestId(requestId);
         log.info("[RequestId: {}] Starting SignupController.registerUser()", requestId);
 
         HttpStatus httpStatus = HttpStatus.OK;
