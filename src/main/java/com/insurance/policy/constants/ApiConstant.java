@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiConstant {
-
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class INSURANCE {
         public static final String QUOTATION_PLAN = "plan/get-quotation-plan";
@@ -51,6 +50,7 @@ public class ApiConstant {
     public static class S3 {
         public static final String BASE = "s3";
         public static final String UPLOAD_FILES = BASE + "/uploadFiles";
+        public static final String DOWNLOAD_FILE_BY_DOCUMENT_KEY = BASE + "/downloadFileByDocumentKey";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

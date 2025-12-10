@@ -16,6 +16,12 @@ public enum NotificationTemplate {
             NotificationSeverity.ERROR,
             "/payment/process"
     ),
+    CLAIM_UPLOAD_SUCCESS(
+            "Your upload claim was successful.",
+            NotificationEventType.CLAIM_UPLOAD_SUCCESS,
+            NotificationSeverity.INFO,
+            "/claim/submit"
+    ),
     BENEFICIARY_CREATED(
             "Your beneficiary has been created.",
             NotificationEventType.BENEFICIARY_CREATED,

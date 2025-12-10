@@ -77,4 +77,9 @@ public final class GeneralConstant {
         public static final String EXPIRED = "EXPIRED";
         public static final String IN_PROGRESS = "IN-PROGRESS";
     }
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class S3 {
+        public static final String DEFAULT_PREFIX = "insurance-content";
+    }
 }

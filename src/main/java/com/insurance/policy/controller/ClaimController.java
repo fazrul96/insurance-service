@@ -7,19 +7,28 @@ import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.ClaimInfoResponse;
 import com.insurance.policy.dto.response.ClaimListResponseDto;
 import com.insurance.policy.dto.response.ClaimResponseDto;
+import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.impl.web.ClaimServiceImpl;
 import com.insurance.policy.service.impl.web.NotificationServiceImpl;
+import com.insurance.policy.util.common.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static com.insurance.policy.dto.request.NotificationRequestDto.buildNotification;
+import static com.insurance.policy.util.enums.NotificationTemplate.CLAIM_UPLOAD_SUCCESS;
 
 @Slf4j
 @RestController
@@ -164,10 +173,14 @@ public class ClaimController extends BaseController {
     })
     @PostMapping(path = ApiConstant.INSURANCE.CLAIM_SUBMIT)
     public ApiResponseDto<ClaimResponseDto> submit(
-        @RequestHeader(value = "userId", required = true) String userId,
-        @RequestParam(value = "policyID", required = true) String policyId,
-        @RequestParam(value = "claimTypeID", required = true)  String claimTypeId,
-        @RequestPart(value = "files", required = true) List<MultipartFile> files,
+        @RequestHeader(value = "userId") String userId,
+        @RequestParam(value = "policyId") String policyId,
+        @RequestParam(value = "claimTypeId")  String claimTypeId,
+        @RequestPart(value = "files") List<MultipartFile> files,
+        @RequestParam(value = "prefix", required = false)
+        @Parameter(name = "prefix", description = "Optional prefix added to the file key paths.",
+                example = "documents/"
+        ) String prefix,
         @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
         @Parameter(
                 name = "language",
@@ -192,17 +205,8 @@ public class ClaimController extends BaseController {
         HttpStatus httpStatus = HttpStatus.OK;
 
         try {
-            ClaimResponseDto response = claimService.submitClaim(policyId, userId, claimTypeId, files);
-
-//            notificationService.notifyUser(
-//                    userId,
-//                    "You have successfully submitted your claim.",
-//                    "SUBMIT_CLAIM",
-//                    "/beneficiary/",
-//                    "INFO",
-//                    Long.valueOf(policyId)
-//            );
-
+            ClaimResponseDto response = claimService.submitClaim(requestId, userId, Long.valueOf(policyId), Long.valueOf(claimTypeId), files, prefix);
+            notificationService.notifyUser(buildNotification(userId, null, CLAIM_UPLOAD_SUCCESS));
             return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
         } catch (Exception e) {
             log.info("[RequestId: {}] Execute ClaimController.submit() ERROR {}",
@@ -211,62 +215,32 @@ public class ClaimController extends BaseController {
         }
     }
 
-//    @Operation(summary = "Download a claim file by its key name")
-//    @ApiResponses(value = {
-//        @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
-//        @ApiResponse(responseCode = MessageConstants.HttpCodes.BAD_REQUEST, description = MessageConstants.HttpDescription.BAD_REQUEST_DESC),
-//        @ApiResponse(responseCode = MessageConstants.HttpCodes.INTERNAL_SERVER_ERROR, description = MessageConstants.HttpDescription.INTERNAL_ERROR_DESC)
-//    })
-//    @PostMapping(path = ApiConstant.INSURANCE.CLAIM_DOWNLOAD)
-//    public ApiResponseDto<?> downloadFile(
-//        @Valid @RequestBody
-//        @Parameter(
-//                name = "request",
-//                description = "Payload containing download file request.",
-//                required = true
-//        ) final  Map<String, String> request,
-//        @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
-//        @Parameter(
-//                name = "language",
-//                description = "Locale for response localization. Accepts en_US or in_ID."
-//        ) final String language,
-//        @RequestParam(value = "channel", required = false, defaultValue = "web")
-//        @Parameter(
-//                name = "channel",
-//                description = "Source of request such as web or mobile.",
-//                example = "web"
-//        ) final String channel,
-//        @RequestParam(value = "requestId", required = false)
-//        @Parameter(
-//                name = "requestId",
-//                description = "Unique identifier per request. Auto-generated if missing.",
-//                example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
-//        ) String requestId
-//    ) {
-//        requestId = this.resolveRequestId(requestId);
-//        log.info("[RequestId: {}] Starting ClaimController.downloadFile()", requestId);
-//
-//        String keyName = request.get("keyName");
-//        HttpStatus httpStatus = HttpStatus.OK;
-//
-//        try (S3ObjectInputStream s3InputStream = awsS3Service.downloadFile(keyName)) {
-//            byte[] fileContent = IOUtils.toByteArray(s3InputStream);
-//
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//
-//            String filename = keyName.substring(keyName.lastIndexOf(GeneralConstant.SLASH) + 1);
-//            headers.setContentDisposition(ContentDisposition.attachment().filename(filename).build());
-//
-//            return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), fileContent, MessageConstants.HttpDescription.OK_DESC);
-//        } catch (IOException e) {
-//            log.info("[RequestId: {}] Execute ClaimController.downloadFile() ERROR: {}",
-//                    requestId, e.getMessage());
-//            return getResponseMessage(language, channel, requestId, HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, e.getMessage());
-//        } catch (Exception e) {
-//            log.info("[RequestId: {}] Execute ClaimController.downloadFile() ERROR {}",
-//                    requestId, e.getMessage());
-//            return getResponseMessage(language, channel, requestId, HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, null);
-//        }
-//    }
+    @Operation(summary = "Download a claim file by its key name")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = MessageConstants.HttpCodes.OK, description =  MessageConstants.HttpDescription.OK_DESC),
+        @ApiResponse(responseCode = MessageConstants.HttpCodes.BAD_REQUEST, description = MessageConstants.HttpDescription.BAD_REQUEST_DESC),
+        @ApiResponse(responseCode = MessageConstants.HttpCodes.INTERNAL_SERVER_ERROR, description = MessageConstants.HttpDescription.INTERNAL_ERROR_DESC)
+    })
+    @GetMapping(path = ApiConstant.INSURANCE.CLAIM_DOWNLOAD)
+    public ResponseEntity<Resource> downloadFile(
+        @RequestHeader("userId") String userId,
+        @RequestParam("documentKey") String documentKey,
+        @RequestParam(value = "requestId", required = false)
+        @Parameter(
+                name = "requestId",
+                description = "Unique identifier per request. Auto-generated if missing.",
+                example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
+        ) String requestId
+    ) throws WebException {
+        requestId = this.resolveRequestId(requestId);
+        log.info("[RequestId: {}] Starting ClaimController.downloadFile()", requestId);
+
+        Resource response = claimService.downloadByDocumentKey(requestId, userId, documentKey);
+        String filename = StringUtils.extractFileNameFromPath(documentKey);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(response);
+    }
 }

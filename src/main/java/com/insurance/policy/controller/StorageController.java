@@ -68,7 +68,7 @@ public class StorageController extends BaseController {
         HttpStatus httpStatus = HttpStatus.OK;
 
         try {
-            UploadListResponseDto response = storageClientService.uploadFilesLatest(requestId, userId, files, prefix);
+            UploadListResponseDto response = storageClientService.uploadFiles(requestId, userId, files, prefix);
             return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), response, MessageConstants.HttpDescription.OK_DESC);
 
         } catch (Exception e) {

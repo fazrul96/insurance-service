@@ -54,4 +54,16 @@ public class StringUtils {
         }
         return prefix.endsWith("/") ? prefix : prefix + "/";
     }
+
+    /**
+     * Extracts the file name from a full path (handles slashes).
+     * Example: "folder/subfolder/file.txt" -> "file.txt"
+     */
+    public static String extractFileNameFromPath(String path) {
+        if (path == null || path.isEmpty()) {
+            return "";
+        }
+        int lastSlash = path.lastIndexOf('/');
+        return lastSlash >= 0 ? path.substring(lastSlash + 1) : path;
+    }
 }

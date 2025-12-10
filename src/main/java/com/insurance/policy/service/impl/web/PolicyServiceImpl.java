@@ -67,6 +67,12 @@ public class PolicyServiceImpl implements PolicyService {
         return toPolicyResponse(policy);
     }
 
+    public Policy findPolicyById(String requestId, Long id) throws WebException {
+        log.info("[RequestId: {}] Execute PolicyServiceImpl.findPolicyById()", requestId);
+        return policyRepository.findById(id)
+                .orElseThrow(() -> new WebException("Policy not found"));
+    }
+
     public PolicyResponseDto constructApplicationAndBeneficiaryResponse(Policy policy) {
         QuotationApplication quotationApplication = (policy.getQuotationApplication());
         Plan plan = policy.getPlan();
