@@ -44,7 +44,9 @@ public class StorageClientServiceImpl implements StorageClientService {
         this.privateApi = storageServiceBaseUrl + appProperties.getPrivateApiPath();
     }
 
-    public UploadListResponseDto uploadFiles(String requestId, String userId, List<MultipartFile> files, String prefix) {
+    @Override
+    public UploadListResponseDto uploadFiles(
+            String requestId, String userId, List<MultipartFile> files, String prefix) {
         log.info("[RequestId: {}] Starting StorageClientServiceImpl.uploadFiles()", requestId);
 
         MultipartBodyBuilder builder = buildMultipartBody(files, prefix);
@@ -53,6 +55,7 @@ public class StorageClientServiceImpl implements StorageClientService {
         return new UploadListResponseDto(extractFilesFromResponse(response));
     }
 
+    @Override
     public ResponseEntity<byte[]> processDownload(String requestId, String userId, String documentKey) {
         log.info("[RequestId: {}] Starting StorageClientServiceImpl.downloadFile()", requestId);
         String queryParam = "?documentKey=" + documentKey;

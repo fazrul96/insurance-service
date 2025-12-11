@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public class PlanController extends BaseController {
     private final PlanServiceImpl planServiceImpl;
 
+    @Override
+    protected String getControllerName() {
+        return "PlanController";
+    }
+
     /**
      * Generate insurance quotation plans based on customer inputs.
      *
@@ -37,7 +42,8 @@ public class PlanController extends BaseController {
             @Valid @RequestBody
             @Parameter(
                     name = "request",
-                    description = "Payload containing customer and product details to generate insurance quotation plan.",
+                    description = "Payload containing customer and product details " +
+                            "to generate insurance quotation plan.",
                     required = true
             ) final PlanRequestDto request
     ) {

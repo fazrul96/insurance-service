@@ -23,6 +23,11 @@ import java.util.List;
 public class StorageController extends BaseController {
     private final StorageClientServiceImpl storageClientService;
 
+    @Override
+    protected String getControllerName() {
+        return "StorageController";
+    }
+
     @Operation(
             summary = "Upload files to S3 storage",
             description = "Handles file upload to S3 bucket with optional prefix for key path."

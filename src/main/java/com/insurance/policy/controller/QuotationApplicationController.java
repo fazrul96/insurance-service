@@ -11,14 +11,17 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class QuotationApplicationController extends BaseController {
     private final QuotationApplicationService quotationApplicationService;
+
+    @Override
+    protected String getControllerName() {
+        return "QuotationApplicationController";
+    }
 
     @Operation(summary = "Retrieve all quotations")
     @DefaultApiResponses
@@ -43,7 +46,7 @@ public class QuotationApplicationController extends BaseController {
     @Operation(summary = "Retrieve quotations by id")
     @DefaultApiResponses
     @GetMapping(path = INSURANCE.QUOTATION_LIST_WITH_ID)
-    public ApiResponseDto<Optional<QuotationApplication>> getQuotationsById(
+    public ApiResponseDto<QuotationApplication> getQuotationsById(
             RequestContext context, @PathVariable("id") Long id
     ) {
         logRequest(context.getRequestId(), "QuotationApplicationController.getQuotationsById()");

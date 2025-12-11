@@ -32,22 +32,10 @@ import static com.insurance.policy.util.enums.NotificationTemplate.CLAIM_UPLOAD_
 @RequiredArgsConstructor
 @Slf4j
 @SuppressWarnings({
-        "PMD.FormalParameterNamingConventions",
-        "PMD.UseIndexOfChar",
-        "PMD.ExcessiveParameterList",
-        "PMD.NullAssignment",
-        "PMD.AvoidCatchingNPE",
-        "PMD.PreserveStackTrace",
-        "PMD.UseUnderscoresInNumericLiterals",
-        "PMD.NcssCount",
-        "PMD.CognitiveComplexity",
-        "PMD.CyclomaticComplexity",
-        "PMD.NPathComplexity",
-        "PMD.PrematureDeclaration",
-        "PMD.LocalVariableNamingConventions",
-        "PMD.UselessParentheses",
+        "PMD.TooManyMethods",
         "PMD.AvoidInstantiatingObjectsInLoops",
-        "PMD.AvoidThrowingNullPointerException"})
+        "PMD.UseIndexOfChar",
+})
 public class ClaimServiceImpl implements ClaimService {
     private final ClaimRepository claimRepository;
     private final ClaimTypeRepository claimTypeRepository;
@@ -59,13 +47,14 @@ public class ClaimServiceImpl implements ClaimService {
     private final StorageClientServiceImpl storageClientService;
     private final NotificationService notificationService;
 
+    @Override
     public List<ClaimListResponseDto> getAllClaims(String userId) {
         return claimRepository.findClaimListByUserId(userId);
     }
 
+    @Override
     public ClaimResponseDto submitClaim(String requestId, String userId, Long policyId, Long claimTypeId,
-            List<MultipartFile> files, String prefix
-    ) throws WebException {
+            List<MultipartFile> files, String prefix) {
         log.info("[RequestId: {}] Execute ClaimServiceImpl.submitClaim()", requestId);
 
         validateSubmittedDocuments(files, claimTypeId);
@@ -87,7 +76,8 @@ public class ClaimServiceImpl implements ClaimService {
         return toClaimResponse(claim, policy, documentList, claimtype);
     }
 
-    public Resource downloadByDocumentKey (String requestId, String userId, String documentKey) throws WebException {
+    @Override
+    public Resource downloadByDocumentKey (String requestId, String userId, String documentKey) {
         ResponseEntity<byte[]> response = storageClientService.processDownload(requestId, userId, documentKey);
 
         byte[] data = response.getBody();
@@ -99,7 +89,8 @@ public class ClaimServiceImpl implements ClaimService {
         return new ByteArrayResource(data);
     }
 
-    public ClaimInfoResponse getClaimInfoByUserId(String requestId, String userId) throws WebException {
+    @Override
+    public ClaimInfoResponse getClaimInfoByUserId(String requestId, String userId) {
         log.info("[RequestId: {}] Execute ClaimServiceImpl.getClaimInfoByUserId()", requestId);
 
         userService.getUserByUserId(requestId, userId);
@@ -110,7 +101,7 @@ public class ClaimServiceImpl implements ClaimService {
         return toClaimInfoResponse(policyInfo, claimDocuments);
     }
 
-    private List<Map<String, String>> buildPolicyInfo(String userId, String requestId) throws WebException {
+    private List<Map<String, String>> buildPolicyInfo(String userId, String requestId) {
         PolicySummaryResponseDto policySummary = policyService.getPolicyByUserKey(requestId, userId);
 
         return policySummary.getPolicies().stream()
@@ -144,14 +135,15 @@ public class ClaimServiceImpl implements ClaimService {
         return new ArrayList<>(map.values());
     }
 
-    private ClaimInfoResponse toClaimInfoResponse(List<Map<String,String>> policyInfo, List<ClaimInfoResponse.ClaimPolicyDocument> claimDocuments) {
+    private ClaimInfoResponse toClaimInfoResponse(
+            List<Map<String,String>> policyInfo, List<ClaimInfoResponse.ClaimPolicyDocument> claimDocuments) {
         return ClaimInfoResponse.builder()
                 .policyInfo(policyInfo)
                 .claimPolicyDocument(claimDocuments)
                 .build();
     }
 
-    public ClaimResponseDto getClaimDetailsByClaimId(Long claimId) throws WebException {
+    public ClaimResponseDto getClaimDetailsByClaimId(Long claimId) {
         Claim claim = getClaimById(claimId);
         ClaimType claimType = claimTypeService.getClaimTypeByClaimId(claimId);
         List<ClaimDocument> documentList = claimTypeService.getClaimDocumentByClaimId(claimId);
@@ -170,12 +162,13 @@ public class ClaimServiceImpl implements ClaimService {
         return toClaimResponse(claimType, documentListMap, claim);
     }
 
-    private Claim getClaimById(Long claimId) throws WebException {
+    private Claim getClaimById(Long claimId) {
         return claimRepository.findById(claimId)
                 .orElseThrow(() -> new WebException("Claim not found"));
     }
 
-    private List<Map<String, String>> saveClaimDocuments(Claim claim, Long claimTypeId, UploadListResponseDto uploadedFiles) {
+    private List<Map<String, String>> saveClaimDocuments(
+            Claim claim, Long claimTypeId, UploadListResponseDto uploadedFiles) {
         List<DocumentType> requiredDocs = documentTypeRepository.findByClaimTypeId(String.valueOf(claimTypeId));
         List<Map<String, String>> documentList = new ArrayList<>();
 
@@ -224,7 +217,7 @@ public class ClaimServiceImpl implements ClaimService {
      * @param claimTypeId       claim type ID used to determine required documents
      * @throws WebException if required documents are missing or validation fails
      */
-    private void validateSubmittedDocuments(List<MultipartFile> uploadedDocuments, Long claimTypeId) throws WebException {
+    private void validateSubmittedDocuments(List<MultipartFile> uploadedDocuments, Long claimTypeId) {
         validateDocumentsExist(uploadedDocuments);
 
         List<DocumentType> requiredDocumentTypes =
@@ -245,7 +238,7 @@ public class ClaimServiceImpl implements ClaimService {
      * @param documents list of uploaded MultipartFile documents
      * @throws WebException if no documents were submitted
      */
-    private void validateDocumentsExist(List<MultipartFile> documents) throws WebException {
+    private void validateDocumentsExist(List<MultipartFile> documents) {
         if (documents == null || documents.isEmpty()) {
             throw new WebException("No documents submitted");
         }
@@ -258,7 +251,7 @@ public class ClaimServiceImpl implements ClaimService {
      * @param requiredName           expected required document type name
      * @throws WebException if required document was not submitted
      */
-    private void validateRequiredDocument(Set<String> submittedDocumentNames, String requiredName) throws WebException {
+    private void validateRequiredDocument(Set<String> submittedDocumentNames, String requiredName) {
         if (!submittedDocumentNames.contains(requiredName)) {
             throw new WebException("Missing required document: " + requiredName);
         }
@@ -278,7 +271,8 @@ public class ClaimServiceImpl implements ClaimService {
                 .build();
     }
 
-    private ClaimResponseDto toClaimResponse(ClaimType claimType, List<Map<String, String>> documentListMap, Claim claim) {
+    private ClaimResponseDto toClaimResponse(
+            ClaimType claimType, List<Map<String, String>> documentListMap, Claim claim) {
         return ClaimResponseDto.builder()
                 .claimType(claimType)
                 .documentList(documentListMap)
@@ -288,7 +282,8 @@ public class ClaimServiceImpl implements ClaimService {
                 .build();
     }
 
-    private ClaimResponseDto toClaimResponse(Claim claim, Policy policy, List<Map<String,String>> documentList,  ClaimType claimtype) {
+    private ClaimResponseDto toClaimResponse(
+            Claim claim, Policy policy, List<Map<String,String>> documentList,  ClaimType claimtype) {
         return ClaimResponseDto.builder()
                 .claimId(claim.getClaimId())
                 .policyNo(policy.getPolicyNo())
@@ -336,7 +331,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     private String resolvePrefix(String prefix) {
-        return (prefix == null || prefix.isBlank())
+        return prefix == null || prefix.isBlank()
                 ? DEFAULT_PREFIX
                 : prefix;
     }

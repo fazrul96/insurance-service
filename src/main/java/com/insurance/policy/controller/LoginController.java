@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController extends BaseController {
     private final AuthServiceImpl authService;
 
+    @Override
+    protected String getControllerName() {
+        return "LoginController";
+    }
+
     @Operation(summary = "Login User")
     @DefaultApiResponses
     @PostMapping(path = ApiConstant.INSURANCE.LOGIN)

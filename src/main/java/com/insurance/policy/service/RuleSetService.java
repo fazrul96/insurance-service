@@ -1,4 +1,3 @@
 package com.insurance.policy.service;
 
-public interface RuleSetService {
-}
+public interface RuleSetService { }

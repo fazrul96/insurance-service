@@ -48,10 +48,15 @@ public final class GeneralConstant {
     public static final class LOG4j {
         public static final String REQUEST_ID = "requestId";
 
-        public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES = "BeneficiaryController.getBeneficiaries";
-        public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES_BY_POLICY_NO = "BeneficiaryController.getBeneficiariesByPolicyNo";
-        public static final String BENEFICIARY_CONTROLLER_GET_BENEFICIARIES_BY_POLICY_ID = "BeneficiaryController.getBeneficiariesByPolicyId";
-        public static final String BENEFICIARY_CONTROLLER_POST_BENEFICIARIES = "BeneficiaryController.getBeneficiariesByPolicyId";
+
+        public static final String GET_BENEFICIARIES =
+                "getBeneficiaries";
+        public static final String GET_BENEFICIARIES_BY_POLICY_NO =
+                "getBeneficiariesByPolicyNo";
+        public static final String GET_BENEFICIARIES_BY_POLICY_ID =
+                "getBeneficiariesByPolicyId";
+        public static final String POST_BENEFICIARIES =
+                "getBeneficiariesByPolicyId";
 
         public static final String BENEFICIARY_SERVICE_UPSERT_ALL = "BeneficiaryServiceImpl.upsertAll";
 

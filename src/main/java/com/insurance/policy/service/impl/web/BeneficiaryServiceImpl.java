@@ -25,11 +25,17 @@ import static com.insurance.policy.util.enums.NotificationTemplate.BENEFICIARY_C
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings({
+        "PMD.GodClass",
+        "PMD.TooManyMethods",
+})
 public class BeneficiaryServiceImpl implements BeneficiaryService {
     private final BeneficiaryRepository beneficiaryRepository;
     private final PolicyRepository policyRepository;
     private final NotificationServiceImpl notificationService;
+    private static final int MAX_TOTAL_SHARE = 100;
 
+    @Override
     public BeneficiaryListResponseDto getBeneficiaries(String requestId) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiaries()", requestId);
 
@@ -37,6 +43,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         return new BeneficiaryListResponseDto(beneficiaries);
     }
 
+    @Override
     public BeneficiaryListResponseDto getBeneficiariesByPolicyNo(String requestId, String policyNo) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiariesByPolicyNo()", requestId);
 
@@ -44,18 +51,20 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         return new BeneficiaryListResponseDto(beneficiaries);
     }
 
+    @Override
     public BeneficiaryListResponseDto getBeneficiariesByPolicyId(String requestId, Long id) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiariesByPolicyId()", requestId);
         return new BeneficiaryListResponseDto(beneficiaryRepository.findByPolicyId(id));
     }
 
+    @Override
     public Beneficiary createBeneficiary(String requestId, Beneficiary request) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.createBeneficiary()", requestId);
         return beneficiaryRepository.save(request);
     }
 
-    public BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request)
-            throws WebException {
+    @Override
+    public BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.createBeneficiaries()", requestId);
 
         Policy policy = getPolicyByPolicyNo(requestId, request.getPolicyNo());
@@ -84,7 +93,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         return mapBeneficiaryResponseDto(request);
     }
 
-    private Beneficiary getBeneficiaryById(String requestId, Long id) throws WebException {
+    private Beneficiary getBeneficiaryById(String requestId, Long id) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiaryById()", requestId);
         return beneficiaryRepository.findById(id)
                 .orElseThrow(() -> new WebException("Beneficiary not found"));
@@ -121,7 +130,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         beneficiaryRepository.deleteById(id);
     }
 
-    private void validateBeneficiaries(List<BeneficiaryDto> beneficiaries, Policy policy) throws WebException {
+    private void validateBeneficiaries(List<BeneficiaryDto> beneficiaries, Policy policy) {
 
         Map<Long, Beneficiary> existingMap =
                 beneficiaryRepository.findByPolicyNo(policy.getPolicyNo()).stream()
@@ -155,19 +164,19 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         validateMaxCount(activeCount);
     }
 
-    private void ensureActionIsNotNull(BeneficiaryDto dto) throws WebException {
+    private void ensureActionIsNotNull(BeneficiaryDto dto) {
         if (dto.getAction() == null) {
             throw new WebException("Action cannot be null for beneficiary with ID: " + dto.getId());
         }
     }
 
-    private void validateCreate(BeneficiaryDto dto) throws WebException {
+    private void validateCreate(BeneficiaryDto dto) {
         if (dto.getShare() == null || dto.getShare() <= 0) {
             throw new WebException("Share must be > 0 for CREATE action");
         }
     }
 
-    private void validateUpdate(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap) throws WebException {
+    private void validateUpdate(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap) {
         ensureIdPresent(dto, "UPDATE");
 
         if (!existingMap.containsKey(dto.getId())) {
@@ -179,7 +188,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         }
     }
 
-    private void validateDelete(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap, Policy policy) throws WebException {
+    private void validateDelete(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap, Policy policy) {
         ensureIdPresent(dto, "DELETE");
 
         if (!existingMap.containsKey(dto.getId())) {
@@ -190,25 +199,29 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         }
     }
 
-    private void ensureIdPresent(BeneficiaryDto dto, String action) throws WebException {
+    private void ensureIdPresent(BeneficiaryDto dto, String action) {
         if (dto.getId() == null) {
             throw new WebException(action + " action requires an ID.");
         }
     }
 
-    public void validateTotalShare(int totalShare) throws WebException {
-        if (totalShare > 100) {
-            throw new WebException("Total share exceeds 100% (current: " + totalShare + "%)");
+    @Override
+    public void validateTotalShare(int totalShare) {
+        if (totalShare > MAX_TOTAL_SHARE) {
+            throw new WebException(
+                    "Total share exceeds allowed maximum (" + MAX_TOTAL_SHARE + "%), current: " + totalShare + "%"
+            );
         }
     }
 
-    public void validateMaxCount(int count) throws WebException {
+    @Override
+    public void validateMaxCount(int count) {
         if (count > MAX_BENEFICIARIES) {
             throw new WebException("Cannot exceed the maximum number of beneficiaries (" + MAX_BENEFICIARIES + ")");
         }
     }
 
-    private Policy getPolicyByPolicyNo(String requestId, String policyNo) throws WebException {
+    private Policy getPolicyByPolicyNo(String requestId, String policyNo) {
         log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getPolicyByPolicyNo()", requestId);
         return policyRepository.findByPolicyNo(policyNo)
                 .orElseThrow(() -> new WebException("Policy Number not found"));

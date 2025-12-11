@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface DocumentTypeRepository extends JpaRepository<DocumentType, Long> {
+
     @Query(value = "SELECT * FROM document_type WHERE claim_type_id = ?1", nativeQuery = true)
     List<DocumentType> findByClaimTypeId(String claimTypeId);
 }

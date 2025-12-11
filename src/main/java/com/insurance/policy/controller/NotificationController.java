@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController extends BaseController {
     private final NotificationServiceImpl notificationServiceImpl;
 
+    @Override
+    protected String getControllerName() {
+        return "NotificationController";
+    }
+
     @Operation(summary = "Fetch all notifications for the authenticated user")
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_NOTIFICATIONS)

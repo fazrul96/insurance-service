@@ -11,8 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface PolicyRepository extends JpaRepository<Policy,Long> {
+    @Override
     Optional<Policy> findById(Long id);
+
     Optional<Policy> findByPolicyNo(String policyNo);
+
     List<Policy> findByUserId(Long userId);
 
     @Query(value = """

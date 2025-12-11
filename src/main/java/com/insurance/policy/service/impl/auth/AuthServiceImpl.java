@@ -29,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
+    @Override
     public LoginResponseDto login (AuthRequestDto request) {
         authenticate(request);
 
@@ -36,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
         return mapLoginResponseDto(user, fetchUserAccessToken());
     }
 
+    @Override
     @Transactional
     public LoginResponseDto loginAuth0(User request) {
         User user = userRepository.findByEmail(request.getEmail())
@@ -53,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+    @Override
     public void registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email already exists!");

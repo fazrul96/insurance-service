@@ -7,7 +7,6 @@ import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.ClaimInfoResponse;
 import com.insurance.policy.dto.response.ClaimListResponseDto;
 import com.insurance.policy.dto.response.ClaimResponseDto;
-import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.impl.web.ClaimServiceImpl;
 import com.insurance.policy.util.common.StringUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +26,11 @@ import java.util.List;
 @CrossOrigin(origins = "${app.basePath}")
 public class ClaimController extends BaseController {
     private final ClaimServiceImpl claimService;
+
+    @Override
+    protected String getControllerName() {
+        return "ClaimController";
+    }
 
     @Operation(summary = "Retrieve all insurance claims for the specified user.")
     @DefaultApiResponses
@@ -49,7 +53,9 @@ public class ClaimController extends BaseController {
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_POLICY_DOC)
     public ApiResponseDto<ClaimInfoResponse> getPolicyDocuments(RequestContext context) {
         logRequest(context.getRequestId(), "ClaimController.getPolicyDocuments()");
-        return handleRequest(context, () -> claimService.getClaimInfoByUserId(context.getRequestId(), context.getUserId()));
+        return handleRequest(context, () -> claimService.getClaimInfoByUserId(
+                context.getRequestId(), context.getUserId())
+        );
     }
 
     @Operation(summary = "Submit a new insurance claim with attached documents.")
@@ -57,9 +63,9 @@ public class ClaimController extends BaseController {
     @PostMapping(path = ApiConstant.INSURANCE.CLAIM_SUBMIT)
     public ApiResponseDto<ClaimResponseDto> submitClaim(
             RequestContext context,
-            @RequestParam(value = "policyId") String policyId,
-            @RequestParam(value = "claimTypeId")  String claimTypeId,
-            @RequestPart(value = "files") List<MultipartFile> files
+            @RequestParam("policyId") String policyId,
+            @RequestParam("claimTypeId")  String claimTypeId,
+            @RequestPart("files") List<MultipartFile> files
     ) {
         logRequest(context.getRequestId(), "ClaimController.submitClaim()");
         return handleRequest(context, () -> claimService.submitClaim(
@@ -73,7 +79,7 @@ public class ClaimController extends BaseController {
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_DOWNLOAD)
     public ResponseEntity<Resource> downloadClaimFile(
             RequestContext context, @RequestParam("documentKey") String documentKey
-    ) throws WebException {
+    ) {
         logRequest(context.getRequestId(), "ClaimController.downloadClaimFile()");
 
         Resource response = claimService.downloadByDocumentKey(

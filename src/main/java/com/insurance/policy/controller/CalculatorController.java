@@ -10,5 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class CalculatorController extends BaseController {
-
+    @Override
+    protected String getControllerName() {
+        return "CalculatorController";
+    }
 }

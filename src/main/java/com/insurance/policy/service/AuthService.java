@@ -8,5 +8,6 @@ public interface AuthService {
     void registerUser(User user);
 
     LoginResponseDto login (AuthRequestDto request);
+
     LoginResponseDto loginAuth0 (User request);
 }

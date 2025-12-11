@@ -29,12 +29,14 @@ public class PlanServiceImpl implements PlanService {
     private final PlanRepository planRepository;
     private final RuleSetRepository ruleSetRepository;
 
-    public Plan getPlan(String requestId, Long id) throws WebException {
+    @Override
+    public Plan getPlan(String requestId, Long id) {
         log.info("[RequestId: {}] Execute PlanServiceImpl.getPlan()", requestId);
         return planRepository.findById(id)
                 .orElseThrow(() -> new WebException("Plan not found"));
     }
 
+    @Override
     public PlanResponseDto generatePlan(PlanRequestDto request, String requestId) {
         log.info("[RequestId: {}] Execute PlanServiceImpl.generatePlan()", requestId);
 
@@ -71,7 +73,8 @@ public class PlanServiceImpl implements PlanService {
         return planDetails;
     }
 
-    private PlanResponseDto mapPlanResponse(GenderEnum gender, LocalDate dob, int age, List<PlanDetailsDto> planDetails) {
+    private PlanResponseDto mapPlanResponse(
+            GenderEnum gender, LocalDate dob, int age, List<PlanDetailsDto> planDetails) {
         PlanResponseDto response = new PlanResponseDto();
         response.setReferenceNumber(generateReferenceNumber());
         response.setGender(gender.name().toLowerCase());

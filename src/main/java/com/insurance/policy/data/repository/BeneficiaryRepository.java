@@ -11,7 +11,10 @@ import java.util.Optional;
 
 @Repository
 public interface BeneficiaryRepository extends JpaRepository<Beneficiary,Long> {
+
     List<Beneficiary> findByPolicyId(Long id);
+
+    @Override
     Optional<Beneficiary> findById(Long id);
 
     @Query(value = """

@@ -4,16 +4,20 @@ import com.insurance.policy.data.entity.Beneficiary;
 import com.insurance.policy.dto.request.BeneficiaryRequestDto;
 import com.insurance.policy.dto.response.BeneficiaryListResponseDto;
 import com.insurance.policy.dto.response.BeneficiaryResponseDto;
-import com.insurance.policy.exception.WebException;
 
 public interface BeneficiaryService {
+
     BeneficiaryListResponseDto getBeneficiaries(String requestId);
+
     BeneficiaryListResponseDto getBeneficiariesByPolicyNo(String requestId, String policyNo);
+
     BeneficiaryListResponseDto getBeneficiariesByPolicyId (String requestId, Long id);
 
-    BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request) throws WebException;
+    BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request);
+
     Beneficiary createBeneficiary(String requestId, Beneficiary request);
 
-    void validateMaxCount(int activeCount) throws WebException;
-    void validateTotalShare(int totalShare) throws WebException;
+    void validateMaxCount(int activeCount);
+
+    void validateTotalShare(int totalShare);
 }

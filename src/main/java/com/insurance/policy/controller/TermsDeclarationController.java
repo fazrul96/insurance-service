@@ -20,6 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class TermsDeclarationController extends BaseController {
     private final TermsDeclarationServiceImpl termsDeclarationService;
 
+    @Override
+    protected String getControllerName() {
+        return "TermsDeclarationController";
+    }
+
     @Operation(summary = "Retrieve all active insurance terms and declarations")
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_TERMS)

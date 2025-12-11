@@ -11,7 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface QuotationApplicationRepository extends JpaRepository<QuotationApplication,Long> {
+    @Override
     Optional<QuotationApplication> findById(Long id);
+
     List<QuotationApplication> findByApplicationStatus(String applicationStatus);
 
     @Query(value = """

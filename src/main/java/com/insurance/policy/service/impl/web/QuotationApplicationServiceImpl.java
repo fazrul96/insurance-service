@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -27,6 +26,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
     private final PlanServiceImpl planService;
     private final UserServiceImpl userService;
 
+    @Override
     public QuotationApplicationSummaryResponseDto getAllQuotations(String requestId) {
         log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getAllQuotations()", requestId);
 
@@ -38,15 +38,19 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
         return new QuotationApplicationSummaryResponseDto(response);
     }
 
-    public Optional<QuotationApplication> getQuotationsById(String requestId, Long id) {
+    @Override
+    public QuotationApplication getQuotationsById(String requestId, Long id) {
         log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getQuotationsById()", requestId);
-        return quotationApplicationRepository.findById(id);
+        return quotationApplicationRepository.findById(id)
+                .orElseThrow(() -> new WebException("Quotation not found"));
     }
 
+    @Override
     public QuotationApplicationSummaryResponseDto getQuotationsByStatus(String requestId, String applicationStatus) {
         log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getQuotationsByStatus()", requestId);
 
-        List<QuotationApplicationResponseDto> response = quotationApplicationRepository.findByApplicationStatus(applicationStatus)
+        List<QuotationApplicationResponseDto> response = quotationApplicationRepository
+                .findByApplicationStatus(applicationStatus)
                 .stream()
                 .map(this::toQuotationApplicationResponse)
                 .toList();
@@ -54,6 +58,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
         return new QuotationApplicationSummaryResponseDto(response);
     }
 
+    @Override
     public QuotationApplicationSummaryResponseDto getQuotationsByUserId(String requestId, String userId) {
         log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getQuotationsByUserId()", requestId);
 
@@ -65,13 +70,14 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
         return new QuotationApplicationSummaryResponseDto(response);
     }
 
+    @Override
     public QuotationApplication createQuotation(QuotationApplication application) {
         return quotationApplicationRepository.save(application);
     }
 
+    @Override
     public QuotationApplicationResponseDto processQuotation(
-            String requestId, String userId, QuotationApplicationRequestDto request
-    ) throws WebException {
+            String requestId, String userId, QuotationApplicationRequestDto request) {
         log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.processQuotation()", requestId);
 
         PersonDto person = request.getPersonDto();
@@ -83,7 +89,8 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
         return toQuotationApplicationResponse(createQuotation(application));
     }
 
-    private QuotationApplication toQuotationApplication(PersonDto personDto, PlanInfoDto planInfoDto, User user, Plan plan) {
+    private QuotationApplication toQuotationApplication(
+            PersonDto personDto, PlanInfoDto planInfoDto, User user, Plan plan) {
         return QuotationApplication.builder()
                 .fullName(personDto.getFullName())
                 .gender(personDto.getGender())
@@ -111,6 +118,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
                 .build();
     }
 
+    @Override
     public QuotationApplicationResponseDto toQuotationApplicationResponse(QuotationApplication request) {
         return QuotationApplicationResponseDto.builder()
                 .id(request.getId())

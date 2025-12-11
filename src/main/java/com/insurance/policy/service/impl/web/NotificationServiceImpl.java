@@ -17,11 +17,13 @@ import java.util.List;
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
+    @Override
     public void notifyUser(NotificationRequestDto request) {
         Notification notification = toNotification(request);
         notificationRepository.save(notification);
     }
 
+    @Override
     public NotificationResponseDto getUserNotifications(String userId, String requestId) {
         log.info("[RequestId: {}] Execute NotificationServiceImpl.getUserNotifications()", requestId);
 

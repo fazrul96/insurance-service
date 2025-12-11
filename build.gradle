@@ -20,6 +20,7 @@ java {
 ext {
     snippetsDir = file('build/generated-snippets')
 
+    SPRING_BOOT_VERSION = '3.4.0'
     SWAGGER_ANNOTATIONS_VERSION = '2.2.20'
     SPRINGDOC_OPENAPI_VERSION = '2.4.0'
     LOMBOK_VERSION = '1.18.36'
@@ -41,12 +42,25 @@ configurations {
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webflux:${SPRING_BOOT_VERSION}"
     implementation "org.springframework.boot:spring-boot-starter-security"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
     implementation "org.springframework.boot:spring-boot-starter-oauth2-resource-server"
-    implementation "org.projectlombok:lombok:${LOMBOK_VERSION}"
 
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${SPRING_BOOT_VERSION}"
+    // Swagger and OpenAPI
+    implementation "io.swagger.core.v3:swagger-annotations:${SWAGGER_ANNOTATIONS_VERSION}"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${SPRINGDOC_OPENAPI_VERSION}"
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+    implementation "org.projectlombok:lombok:${LOMBOK_VERSION}"
     annotationProcessor "org.projectlombok:lombok:${LOMBOK_VERSION}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+
+    // Databases
+    implementation 'mysql:mysql-connector-java:8.0.33'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -157,3 +171,9 @@ check.dependsOn jacocoTestReport
 task wrapperUpdate(type: Wrapper) {
     gradleVersion = '8.7'
 }
+
+
+// Temporary disable, remove this once done
+//tasks.withType(Test).configureEach {
+//    enabled = false
+//}

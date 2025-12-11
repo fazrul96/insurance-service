@@ -21,6 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController extends BaseController {
     private final PaymentServiceImpl paymentService;
 
+    @Override
+    protected String getControllerName() {
+        return "PaymentController";
+    }
+
     @Operation(summary = "Retrieve all payments")
     @DefaultApiResponses
     @GetMapping(path = INSURANCE.PAYMENT_LIST)

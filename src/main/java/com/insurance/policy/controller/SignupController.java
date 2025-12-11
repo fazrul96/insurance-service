@@ -2,7 +2,6 @@ package com.insurance.policy.controller;
 
 import com.insurance.policy.config.swagger.DefaultApiResponses;
 import com.insurance.policy.constants.ApiConstant;
-import com.insurance.policy.constants.GeneralConstant;
 import com.insurance.policy.constants.MessageConstants;
 import com.insurance.policy.data.entity.User;
 import com.insurance.policy.dto.RequestContext;
@@ -25,6 +24,11 @@ import org.springframework.web.bind.annotation.*;
 public class SignupController extends BaseController {
     private final AuthService authService;
 
+    @Override
+    protected String getControllerName() {
+        return "SignupController";
+    }
+
     @Operation(summary = "Register a new user")
     @DefaultApiResponses
     @PostMapping(path = ApiConstant.INSURANCE.SIGNUP)
@@ -35,37 +39,21 @@ public class SignupController extends BaseController {
                     name = "user",
                     description = "Payload containing username and password to login.",
                     required = true
-            ) final User request,
-        @RequestParam(value = "language", required = false, defaultValue = GeneralConstant.Language.IN_ID)
-        @Parameter(
-                name = "language",
-                description = "Locale for response localization. Accepts en_US or in_ID."
-        ) final String language,
-        @RequestParam(value = "channel", required = false, defaultValue = "web")
-        @Parameter(
-                name = "channel",
-                description = "Source of request such as web or mobile.",
-                example = "web"
-        ) final String channel,
-        @RequestParam(value = "requestId", required = false)
-        @Parameter(
-                name = "requestId",
-                description = "Unique identifier per request. Auto-generated if missing.",
-                example = "f3a2b1c8-8c12-4b4c-93d4-123456789abc"
-        ) String requestId
+            ) final User request
     ) {
-        requestId = resolveRequestId(requestId);
-        log.info("[RequestId: {}] Starting SignupController.registerUser()", requestId);
+        log.info("[RequestId: {}] Starting SignupController.registerUser()", context.getRequestId());
 
         HttpStatus httpStatus = HttpStatus.OK;
 
         try {
             authService.registerUser(request);
-            return getResponseMessage(language, channel, requestId, httpStatus, httpStatus.getReasonPhrase(), null, MessageConstants.HttpDescription.OK_DESC);
+            return getResponseMessage(context.getLanguage(), context.getChannel(), context.getRequestId(), httpStatus,
+                    httpStatus.getReasonPhrase(), null, MessageConstants.HttpDescription.OK_DESC);
         } catch (Exception e) {
             log.info("[RequestId: {}] Execute SignupController.registerUser() ERROR {}",
-                    requestId, e.getMessage());
-            return getResponseMessage(language, channel, requestId, HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, null);
+                    context.getRequestId(), e.getMessage());
+            return getResponseMessage(context.getLanguage(), context.getChannel(), context.getRequestId(),
+                    HttpStatus.INTERNAL_SERVER_ERROR, MessageConstants.HttpDescription.INTERNAL_ERROR_DESC, null);
         }
     }
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface RuleSetRepository extends JpaRepository<RuleSet, Long> {
+
     @Query(value = """
         SELECT r.*
         FROM ruleset r

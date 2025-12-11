@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ClaimDocumentRepository extends JpaRepository<ClaimDocument, Long> {
+
     @Query(value = "SELECT * FROM claim_document WHERE claim_id = ?1", nativeQuery = true)
     List<ClaimDocument> getClaimDocumentByClaimId(Long claimId);
 }

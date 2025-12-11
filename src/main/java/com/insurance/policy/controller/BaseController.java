@@ -25,6 +25,12 @@ import java.util.function.Supplier;
 @NoArgsConstructor
 public abstract class BaseController {
     /**
+     * Every controller provides its own name.
+     * Useful for debugging/logging, and satisfies Checkstyle.
+     */
+    protected abstract String getControllerName();
+
+    /**
      * Resolves and returns the request ID. If the provided requestId is null,
      * a new requestId will be generated.
      *
@@ -32,10 +38,11 @@ public abstract class BaseController {
      * @return The resolved or generated request ID.
      */
     protected static String resolveRequestId(String requestId) {
-        return (requestId == null || requestId.isBlank())
+        return requestId == null || requestId.isBlank()
                 ? UUID.randomUUID().toString()
                 : requestId;
     }
+
 
     @ModelAttribute
     protected RequestContext requestContext(

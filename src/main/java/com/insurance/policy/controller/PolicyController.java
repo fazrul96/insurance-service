@@ -22,6 +22,11 @@ public class PolicyController extends BaseController {
     private final PolicyServiceImpl policyService;
     private final BeneficiaryServiceImpl beneficiaryService;
 
+    @Override
+    protected String getControllerName() {
+        return "PolicyController";
+    }
+
     @Operation(summary = "Fetch all policies")
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_POLICIES)

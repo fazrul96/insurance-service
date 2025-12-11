@@ -36,7 +36,9 @@ public class PolicyServiceImpl implements PolicyService {
     private final PolicyRepository policyRepository;
     private final QuotationApplicationService quotationApplicationService;
     private final NotificationService notificationService;
+    private static final long ONE_YEAR_MILLIS = 31_536_000_000L;
 
+    @Override
     public PolicySummaryResponseDto getAllPolicies(String requestId) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.getAllPolicies()", requestId);
 
@@ -48,6 +50,7 @@ public class PolicyServiceImpl implements PolicyService {
         return new PolicySummaryResponseDto(policies);
     }
 
+    @Override
     public PolicySummaryResponseDto getPolicyByUserId(Long userId, String requestId) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyByUserId()", requestId);
 
@@ -59,6 +62,7 @@ public class PolicyServiceImpl implements PolicyService {
         return new PolicySummaryResponseDto(policies);
     }
 
+    @Override
     public PolicySummaryResponseDto getPolicyByUserKey(String requestId, String userId) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyByUserKey()", requestId);
 
@@ -70,7 +74,8 @@ public class PolicyServiceImpl implements PolicyService {
         return new PolicySummaryResponseDto(policies);
     }
 
-    public PolicyResponseDto getPolicyById(String requestId, Long id) throws WebException {
+    @Override
+    public PolicyResponseDto getPolicyById(String requestId, Long id) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyById()", requestId);
         Policy policy = policyRepository.findById(id)
                 .orElseThrow(() -> new WebException("Policy not found"));
@@ -78,14 +83,15 @@ public class PolicyServiceImpl implements PolicyService {
         return toPolicyResponse(policy);
     }
 
-    public Policy findPolicyById(String requestId, Long id) throws WebException {
+    public Policy findPolicyById(String requestId, Long id) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.findPolicyById()", requestId);
         return policyRepository.findById(id)
                 .orElseThrow(() -> new WebException("Policy not found"));
     }
 
+    @Override
     public PolicyResponseDto constructApplicationAndBeneficiaryResponse(Policy policy) {
-        QuotationApplication quotationApplication = (policy.getQuotationApplication());
+        QuotationApplication quotationApplication = policy.getQuotationApplication();
         Plan plan = policy.getPlan();
 
         QuotationApplicationResponseDto application =
@@ -100,9 +106,9 @@ public class PolicyServiceImpl implements PolicyService {
         return policyResponseDto;
     }
 
+    @Override
     public QuotationApplicationResponseDto createApplication(
-            QuotationApplicationRequestDto requestDto, String userId, String requestId
-    ) throws WebException {
+            QuotationApplicationRequestDto requestDto, String userId, String requestId) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.createApplication()", requestId);
         notificationService.notifyUser(buildNotification(requestId, null, QUOTATION_CREATED));
         return quotationApplicationService.processQuotation(requestId, userId, requestDto);
@@ -112,12 +118,10 @@ public class PolicyServiceImpl implements PolicyService {
         return policyRepository.save(policy);
     }
 
-    public void updateStatusAndPayment(Long applicationId, String status, Payment payment, String requestId) throws WebException {
+    public void updateStatusAndPayment(Long applicationId, String status, Payment payment, String requestId) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.updateStatusAndPayment()", requestId);
 
-        QuotationApplication application = quotationApplicationService
-                .getQuotationsById("", applicationId)
-                .orElseThrow(() -> new WebException("Quotation not found"));
+        QuotationApplication application = quotationApplicationService.getQuotationsById(requestId, applicationId);
 
         application.setApplicationStatus(status);
         quotationApplicationService.createQuotation(application);
@@ -125,8 +129,7 @@ public class PolicyServiceImpl implements PolicyService {
 
     public PaymentResponseDto processPolicyPayment(
             PaymentRequestDto request, Payment payment, QuotationApplication application,
-            PaymentDetailsDto paymentDetails, String requestId
-    ) throws WebException {
+            PaymentDetailsDto paymentDetails, String requestId) {
         log.info("[RequestId: {}] Execute PolicyServiceImpl.processPolicyPayment()", requestId);
         updateStatusAndPayment(request.getQuotationId(), ResponseMessages.SUCCESS, payment, requestId);
 
@@ -158,11 +161,11 @@ public class PolicyServiceImpl implements PolicyService {
                 .build();
     }
 
-    private Policy toPolicy (QuotationApplication application, Payment payment) {
+    private Policy toPolicy(QuotationApplication application, Payment payment) {
         return Policy.builder()
                 .policyNo(generateReferenceNumber("POL"))
                 .startDate(new Date())
-                .endDate(new Date(System.currentTimeMillis() + 31536000000L))
+                .endDate(new Date(System.currentTimeMillis() + ONE_YEAR_MILLIS))
                 .status("ACTIVE")
                 .quotationApplication(application)
                 .plan(application.getPlan())
@@ -170,4 +173,5 @@ public class PolicyServiceImpl implements PolicyService {
                 .payment(payment)
                 .build();
     }
+
 }

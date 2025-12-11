@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface ClaimTypeRepository extends JpaRepository<ClaimType, Long> {
+
     @Query(value = """
         SELECT ct.claim_type_id,ct.claim_type_name,ct.claim_type_description, dt.document_type_name
         FROM claim_type ct

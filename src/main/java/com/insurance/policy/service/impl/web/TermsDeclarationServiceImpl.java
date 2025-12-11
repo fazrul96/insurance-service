@@ -16,6 +16,7 @@ import java.util.List;
 public class TermsDeclarationServiceImpl implements TermsDeclarationService {
     private final TermsDeclarationRepository termsDeclarationRepository;
 
+    @Override
     public TermsDeclarationResponseDto getAllTerms(String requestId) {
         log.info("[RequestId: {}] Execute InsuranceTermsDeclarationService.getAllTerms()", requestId);
 

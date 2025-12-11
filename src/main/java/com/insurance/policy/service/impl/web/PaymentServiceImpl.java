@@ -9,7 +9,6 @@ import com.insurance.policy.dto.PaymentDetailsDto;
 import com.insurance.policy.dto.request.PaymentRequestDto;
 import com.insurance.policy.dto.response.PaymentResponseDto;
 import com.insurance.policy.dto.response.PaymentSummaryResponseDto;
-import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.PaymentService;
 import com.insurance.policy.service.QuotationApplicationService;
 import com.insurance.policy.util.enums.PaymentStatus;
@@ -34,6 +33,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final QuotationApplicationService quotationApplicationService;
     private final NotificationServiceImpl notificationService;
 
+    @Override
     public PaymentSummaryResponseDto getAllPayments(String requestId) {
         log.info("[RequestId: {}] Execute PaymentServiceImpl.getAllPayments()", requestId);
 
@@ -45,6 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
         return new PaymentSummaryResponseDto(response);
     }
 
+    @Override
     public PaymentSummaryResponseDto getPaymentsByStatus(String requestId, String status) {
         log.info("[RequestId: {}] Execute PaymentServiceImpl.getPaymentsByStatus()", requestId);
 
@@ -56,15 +57,13 @@ public class PaymentServiceImpl implements PaymentService {
         return new PaymentSummaryResponseDto(response);
     }
 
-    public PaymentResponseDto paymentProcess(String userId, PaymentRequestDto requestDto, String requestId) throws WebException {
+    @Override
+    public PaymentResponseDto paymentProcess(String userId, PaymentRequestDto requestDto, String requestId) {
         log.info("[RequestId: {}] Execute PaymentServiceImpl.paymentProcess()", requestId);
 
-        QuotationApplication application = quotationApplicationService
-                .getQuotationsById(requestId, requestDto.getQuotationId())
-                .orElseThrow(() -> new WebException("Quotation not found"));
-
         if (!PaymentStatus.SUCCESS.equals(requestDto.getPaymentStatus())) {
-            policyService.updateStatusAndPayment(requestDto.getQuotationId(), ResponseMessages.FAILURE, null, requestId);
+            policyService.updateStatusAndPayment(
+                    requestDto.getQuotationId(), ResponseMessages.FAILURE, null, requestId);
 
             notificationService.notifyUser(buildNotification(null, 1L, PAYMENT_FAILED));
             return PaymentResponseDto.failure("Payment failed, application marked as FAILED.");
@@ -74,7 +73,7 @@ public class PaymentServiceImpl implements PaymentService {
         PaymentDetailsDto paymentDetailsDto = mapPaymentDetails(payment);
 
         PaymentResponseDto responseDto = policyService.processPolicyPayment(
-                requestDto, payment, application, paymentDetailsDto, requestId
+                requestDto, payment, (QuotationApplication) quotationApplicationService, paymentDetailsDto, requestId
         );
 
         notificationService.notifyUser(buildNotification(userId, 1L, PAYMENT_SUCCESS));
