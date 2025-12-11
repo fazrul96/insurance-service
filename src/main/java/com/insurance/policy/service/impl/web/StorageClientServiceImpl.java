@@ -4,7 +4,7 @@ import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.UploadListResponseDto;
 import com.insurance.policy.dto.response.UploadResponseDto;
 import com.insurance.policy.properties.AppProperties;
-import com.insurance.policy.service.impl.StorageClientService;
+import com.insurance.policy.service.StorageClientService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

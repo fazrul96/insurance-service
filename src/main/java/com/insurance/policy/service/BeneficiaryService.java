@@ -16,8 +16,4 @@ public interface BeneficiaryService {
     BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request);
 
     Beneficiary createBeneficiary(String requestId, Beneficiary request);
-
-    void validateMaxCount(int activeCount);
-
-    void validateTotalShare(int totalShare);
 }

@@ -18,22 +18,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.insurance.policy.constants.GeneralConstant.MAX_BENEFICIARIES;
 import static com.insurance.policy.dto.request.NotificationRequestDto.buildNotification;
 import static com.insurance.policy.util.enums.NotificationTemplate.BENEFICIARY_CREATED;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@SuppressWarnings({
-        "PMD.GodClass",
-        "PMD.TooManyMethods",
-})
 public class BeneficiaryServiceImpl implements BeneficiaryService {
     private final BeneficiaryRepository beneficiaryRepository;
     private final PolicyRepository policyRepository;
     private final NotificationServiceImpl notificationService;
-    private static final int MAX_TOTAL_SHARE = 100;
+    private final ValidationServiceImpl validationService;
 
     @Override
     public BeneficiaryListResponseDto getBeneficiaries(String requestId) {
@@ -140,11 +135,11 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         int finalTotalShare = 0;
 
         for (BeneficiaryDto dto : beneficiaries) {
-            ensureActionIsNotNull(dto);
+            validationService.validateBeneficiaryActionNotNull(dto);
 
             switch (dto.getAction()) {
                 case CREATE -> {
-                    validateCreate(dto);
+                    validationService.validateBeneficiaryShare(dto);
                     finalTotalShare += dto.getShare().intValue();
                     activeCount++;
                 }
@@ -153,72 +148,26 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
                     finalTotalShare += dto.getShare().intValue();
                 }
                 case DELETE -> {
-                    validateDelete(dto, existingMap, policy);
+                    validateDelete(dto, existingMap);
                     activeCount--;
                 }
                 default -> throw new WebException("Invalid action for beneficiary: " + dto.getAction());
             }
         }
 
-        validateTotalShare(finalTotalShare);
-        validateMaxCount(activeCount);
-    }
-
-    private void ensureActionIsNotNull(BeneficiaryDto dto) {
-        if (dto.getAction() == null) {
-            throw new WebException("Action cannot be null for beneficiary with ID: " + dto.getId());
-        }
-    }
-
-    private void validateCreate(BeneficiaryDto dto) {
-        if (dto.getShare() == null || dto.getShare() <= 0) {
-            throw new WebException("Share must be > 0 for CREATE action");
-        }
+        validationService.validateTotalShare(finalTotalShare);
+        validationService.validateMaxCount(activeCount);
     }
 
     private void validateUpdate(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap) {
-        ensureIdPresent(dto, "UPDATE");
-
-        if (!existingMap.containsKey(dto.getId())) {
-            throw new WebException("Beneficiary not found for ID: " + dto.getId());
-        }
-
-        if (dto.getShare() == null || dto.getShare() <= 0) {
-            throw new WebException("Share must be > 0 for UPDATE action (ID: " + dto.getId() + ")");
-        }
+        validationService.validateBeneficiaryIdNotNull(dto, "UPDATE");
+        validationService.validateEntityExists(dto.getId(), existingMap, "Beneficiary");
+        validationService.validateBeneficiaryShare(dto);
     }
 
-    private void validateDelete(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap, Policy policy) {
-        ensureIdPresent(dto, "DELETE");
-
-        if (!existingMap.containsKey(dto.getId())) {
-            throw new WebException(
-                    "Beneficiary with ID " + dto.getId() +
-                            " not found in policy " + policy.getPolicyNo()
-            );
-        }
-    }
-
-    private void ensureIdPresent(BeneficiaryDto dto, String action) {
-        if (dto.getId() == null) {
-            throw new WebException(action + " action requires an ID.");
-        }
-    }
-
-    @Override
-    public void validateTotalShare(int totalShare) {
-        if (totalShare > MAX_TOTAL_SHARE) {
-            throw new WebException(
-                    "Total share exceeds allowed maximum (" + MAX_TOTAL_SHARE + "%), current: " + totalShare + "%"
-            );
-        }
-    }
-
-    @Override
-    public void validateMaxCount(int count) {
-        if (count > MAX_BENEFICIARIES) {
-            throw new WebException("Cannot exceed the maximum number of beneficiaries (" + MAX_BENEFICIARIES + ")");
-        }
+    private void validateDelete(BeneficiaryDto dto, Map<Long, Beneficiary> existingMap) {
+        validationService.validateBeneficiaryIdNotNull(dto, "DELETE");
+        validationService.validateEntityExists(dto.getId(), existingMap, "Beneficiary");
     }
 
     private Policy getPolicyByPolicyNo(String requestId, String policyNo) {

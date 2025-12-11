@@ -1,4 +1,4 @@
-package com.insurance.policy.service.impl;
+package com.insurance.policy.service;
 
 import com.insurance.policy.dto.response.UploadListResponseDto;
 import org.springframework.http.ResponseEntity;
