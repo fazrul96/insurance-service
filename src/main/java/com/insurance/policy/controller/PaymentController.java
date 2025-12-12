@@ -30,8 +30,9 @@ public class PaymentController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = INSURANCE.PAYMENT_LIST)
     public ApiResponseDto<PaymentSummaryResponseDto> getAllPayments(RequestContext context) {
-        logRequest(context.getRequestId(), "PaymentController.getAllPayments()");
-        return handleRequest(context, () -> paymentService.getAllPayments(context.getRequestId()));
+        return handleRequest(getControllerName() + "getAllPayments",
+                context, () -> paymentService.getAllPayments(context.getRequestId())
+        );
     }
 
     @Operation(summary = "Retrieve payments by status")
@@ -40,8 +41,9 @@ public class PaymentController extends BaseController {
     public ApiResponseDto<PaymentSummaryResponseDto> getPaymentsByStatus(
             RequestContext context, @PathVariable("status") String status
     ) {
-        logRequest(context.getRequestId(), "PaymentController.getPaymentsByStatus()");
-        return handleRequest(context, () -> paymentService.getPaymentsByStatus(context.getRequestId(), status));
+        return handleRequest(getControllerName() + "getPaymentsByStatus",
+                context, () -> paymentService.getPaymentsByStatus(context.getRequestId(), status)
+        );
     }
 
     @Operation(summary = "Initiate insurance payment")
@@ -53,8 +55,8 @@ public class PaymentController extends BaseController {
             @Parameter(name = "request", description = "Payload containing payment request.", required = true)
             final PaymentRequestDto request
     ) {
-        logRequest(context.getRequestId(), "PaymentController.paymentProcess()");
-        return handleRequest(context, () -> paymentService.paymentProcess(
+        return handleRequest(getControllerName() + "paymentProcess",
+                context, () -> paymentService.paymentProcess(
                 context.getUserId(), request, context.getRequestId())
         );
     }

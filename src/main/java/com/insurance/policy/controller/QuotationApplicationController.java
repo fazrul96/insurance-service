@@ -27,8 +27,8 @@ public class QuotationApplicationController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = INSURANCE.QUOTATION_LIST)
     public ApiResponseDto<QuotationApplicationSummaryResponseDto> getAllQuotations(RequestContext context) {
-        logRequest(context.getRequestId(), "QuotationApplicationController.getAllQuotations()");
-        return handleRequest(context, () -> quotationApplicationService.getAllQuotations(context.getRequestId()));
+        return handleRequest(getControllerName() + "getAllQuotations",
+                context, () -> quotationApplicationService.getAllQuotations(context.getRequestId()));
     }
 
     @Operation(summary = "Retrieve quotations by status")
@@ -37,8 +37,8 @@ public class QuotationApplicationController extends BaseController {
     public ApiResponseDto<QuotationApplicationSummaryResponseDto> getQuotationsByStatus(
             RequestContext context, @PathVariable("status") String status
     ) {
-        logRequest(context.getRequestId(), "QuotationApplicationController.getQuotationsByStatus()");
-        return handleRequest(context, () -> quotationApplicationService.getQuotationsByStatus(
+        return handleRequest(getControllerName() + "getQuotationsByStatus",
+                context, () -> quotationApplicationService.getQuotationsByStatus(
                 context.getRequestId(), status)
         );
     }
@@ -49,8 +49,8 @@ public class QuotationApplicationController extends BaseController {
     public ApiResponseDto<QuotationApplication> getQuotationsById(
             RequestContext context, @PathVariable("id") Long id
     ) {
-        logRequest(context.getRequestId(), "QuotationApplicationController.getQuotationsById()");
-        return handleRequest(context, () -> quotationApplicationService.getQuotationsById(context.getRequestId(), id));
+        return handleRequest(getControllerName() + "getQuotationsById",
+                context, () -> quotationApplicationService.getQuotationsById(context.getRequestId(), id));
     }
 
     @Operation(summary = "Retrieve quotations by user id")
@@ -59,8 +59,8 @@ public class QuotationApplicationController extends BaseController {
     public ApiResponseDto<QuotationApplicationSummaryResponseDto> getQuotationsByUserId(
             RequestContext context, @PathVariable("userId") String userId
     ) {
-        logRequest(context.getRequestId(), "QuotationApplicationController.getQuotationsByUserId()");
-        return handleRequest(context, () -> quotationApplicationService.getQuotationsByUserId(
+        return handleRequest(getControllerName() + "getQuotationsByUserId",
+                context, () -> quotationApplicationService.getQuotationsByUserId(
                 context.getRequestId(), userId)
         );
     }

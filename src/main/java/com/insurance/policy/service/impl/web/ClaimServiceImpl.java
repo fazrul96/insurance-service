@@ -10,8 +10,8 @@ import com.insurance.policy.dto.response.*;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.ClaimService;
 import com.insurance.policy.service.NotificationService;
+import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,6 @@ import static com.insurance.policy.util.enums.NotificationTemplate.CLAIM_UPLOAD_
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @SuppressWarnings({
         "PMD.TooManyMethods",
         "PMD.AvoidInstantiatingObjectsInLoops",
@@ -46,6 +45,12 @@ public class ClaimServiceImpl implements ClaimService {
     private final UserServiceImpl userService;
     private final StorageClientServiceImpl storageClientService;
     private final NotificationService notificationService;
+    private final LogUtils logUtils;
+
+    @Override
+    public String getServiceName() {
+        return "ClaimServiceImpl";
+    }
 
     @Override
     public List<ClaimListResponseDto> getAllClaims(String userId) {
@@ -55,7 +60,7 @@ public class ClaimServiceImpl implements ClaimService {
     @Override
     public ClaimResponseDto submitClaim(String requestId, String userId, Long policyId, Long claimTypeId,
             List<MultipartFile> files, String prefix) {
-        log.info("[RequestId: {}] Execute ClaimServiceImpl.submitClaim()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "submitClaim");
 
         validateSubmittedDocuments(files, claimTypeId);
 
@@ -82,7 +87,7 @@ public class ClaimServiceImpl implements ClaimService {
 
         byte[] data = response.getBody();
         if (data == null || response.getStatusCode() != HttpStatus.OK) {
-            log.error("[RequestId: {}] Execute ClaimServiceImpl.downloadFile()", requestId);
+            logUtils.logRequest(requestId, getServiceName() + "downloadFile");
             throw new WebException("Failed to download file from storage service");
         }
 
@@ -91,7 +96,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     @Override
     public ClaimInfoResponse getClaimInfoByUserId(String requestId, String userId) {
-        log.info("[RequestId: {}] Execute ClaimServiceImpl.getClaimInfoByUserId()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getClaimInfoByUserId");
 
         userService.getUserByUserId(requestId, userId);
 

@@ -16,4 +16,6 @@ public interface BeneficiaryService {
     BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request);
 
     Beneficiary createBeneficiary(String requestId, Beneficiary request);
+
+    String getServiceName();
 }

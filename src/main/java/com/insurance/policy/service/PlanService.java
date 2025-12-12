@@ -9,4 +9,6 @@ public interface PlanService {
     Plan getPlan(String requestId, Long id);
 
     PlanResponseDto generatePlan(PlanRequestDto request, String requestId);
+
+    String getServiceName();
 }

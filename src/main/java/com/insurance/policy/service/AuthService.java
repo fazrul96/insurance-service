@@ -10,4 +10,6 @@ public interface AuthService {
     LoginResponseDto login (AuthRequestDto request);
 
     LoginResponseDto loginAuth0 (User request);
+
+    String getServiceName();
 }

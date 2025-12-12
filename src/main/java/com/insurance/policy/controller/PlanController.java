@@ -47,7 +47,7 @@ public class PlanController extends BaseController {
                     required = true
             ) final PlanRequestDto request
     ) {
-        logRequest(context.getRequestId(), "PlanController.generateQuotationPlans()");
-        return handleRequest(context, () -> planServiceImpl.generatePlan(request, context.getRequestId()));
+        return handleRequest(getControllerName() + "generateQuotationPlans",
+                context, () -> planServiceImpl.generatePlan(request, context.getRequestId()));
     }
 }

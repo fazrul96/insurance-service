@@ -6,7 +6,7 @@ import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.exception.WebException;
 import io.swagger.v3.oas.annotations.Parameter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,13 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.UUID;
 import java.util.function.Supplier;
 
+import static com.insurance.policy.constants.GeneralConstant.LOG4j.REQUEST_ID;
+
 /**
  * Abstract base controller to provide unified API responses and helper utilities.
  * Not meant to be instantiated directly.
  */
 @Slf4j
-@NoArgsConstructor
+@RequiredArgsConstructor
 public abstract class BaseController {
+    protected static final String INFO_LOG_PATTERN = "[" + REQUEST_ID + ": {}] Execute {}";
+    protected static final String ERROR_LOG_PATTERN = "[" + REQUEST_ID + ": {}] Execute {} ERROR: {}";
+
     /**
      * Every controller provides its own name.
      * Useful for debugging/logging, and satisfies Checkstyle.
@@ -108,7 +113,9 @@ public abstract class BaseController {
      * @param <T> type of the response
      * @return ApiResponseDto containing the response or error
      */
-    protected <T> ApiResponseDto<T> handleRequest(RequestContext context, Supplier<T> serviceCall) {
+    protected <T> ApiResponseDto<T> handleRequest(String methodName, RequestContext context, Supplier<T> serviceCall) {
+        log.info(INFO_LOG_PATTERN, context.getRequestId(), methodName);
+
         try {
             T data = serviceCall.get();
             return getResponseMessage(
@@ -121,7 +128,7 @@ public abstract class BaseController {
                     MessageConstants.HttpDescription.OK_DESC
             );
         } catch (WebException we) {
-            logRequest(context.getRequestId(), "handleRequest", we);
+            log.error(ERROR_LOG_PATTERN, context.getRequestId(), methodName, we.getMessage());
             return getResponseMessage(
                     context.getLanguage(),
                     context.getChannel(),
@@ -132,7 +139,7 @@ public abstract class BaseController {
                     we.getMessage()
             );
         } catch (BadCredentialsException bce) {
-            logRequest(context.getRequestId(), "handleRequest", bce);
+            log.error(ERROR_LOG_PATTERN, context.getRequestId(), methodName, bce.getMessage());
             return getResponseMessage(
                     context.getLanguage(),
                     context.getChannel(),
@@ -143,7 +150,7 @@ public abstract class BaseController {
                     bce.getMessage()
             );
         } catch (Exception e) {
-            logRequest(context.getRequestId(), "handleRequest", e);
+            log.error(ERROR_LOG_PATTERN, context.getRequestId(), methodName, e.getMessage());
             return getResponseMessage(
                     context.getLanguage(),
                     context.getChannel(),
@@ -154,19 +161,5 @@ public abstract class BaseController {
                     e.getMessage()
             );
         }
-    }
-
-    /**
-     * Logs the start of the request processing, including the method name and request ID.
-     *
-     * @param requestId The unique request ID for tracking.
-     * @param methodName The name of the method that is being executed.
-     */
-    public void logRequest(String requestId, String methodName) {
-        log.info("[RequestId: {}] Execute {}", requestId, methodName);
-    }
-
-    public void logRequest(String requestId, String methodName, Exception e) {
-        log.error("[RequestId: {}] Execute {} ERROR: {}", requestId, methodName, e.getMessage());
     }
 }

@@ -5,9 +5,9 @@ import com.insurance.policy.dto.response.UploadListResponseDto;
 import com.insurance.policy.dto.response.UploadResponseDto;
 import com.insurance.policy.properties.AppProperties;
 import com.insurance.policy.service.StorageClientService;
+import com.insurance.policy.util.common.LogUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
@@ -27,10 +27,10 @@ import static com.insurance.policy.constants.ApiConstant.S3.UPLOAD_FILES;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class StorageClientServiceImpl implements StorageClientService {
     private final WebClient webClient;
     private final AppProperties appProperties;
+    private final LogUtils logUtils;
 
     @Value("${storage-service.base-url}")
     private String storageServiceBaseUrl;
@@ -45,9 +45,14 @@ public class StorageClientServiceImpl implements StorageClientService {
     }
 
     @Override
+    public String getServiceName() {
+        return "StorageClientServiceImpl";
+    }
+
+    @Override
     public UploadListResponseDto uploadFiles(
             String requestId, String userId, List<MultipartFile> files, String prefix) {
-        log.info("[RequestId: {}] Starting StorageClientServiceImpl.uploadFiles()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "uploadFiles");
 
         MultipartBodyBuilder builder = buildMultipartBody(files, prefix);
 
@@ -57,7 +62,8 @@ public class StorageClientServiceImpl implements StorageClientService {
 
     @Override
     public ResponseEntity<byte[]> processDownload(String requestId, String userId, String documentKey) {
-        log.info("[RequestId: {}] Starting StorageClientServiceImpl.downloadFile()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "downloadFile");
+
         String queryParam = "?documentKey=" + documentKey;
         return webClient.get()
                 .uri(this.privateApi + DOWNLOAD_FILE_BY_DOCUMENT_KEY + queryParam)

@@ -6,7 +6,6 @@ import com.insurance.policy.dto.request.AuthRequestDto;
 import com.insurance.policy.dto.response.LoginResponseDto;
 import com.insurance.policy.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +19,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -28,6 +26,11 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+
+    @Override
+    public String getServiceName() {
+        return "AuthServiceImpl";
+    }
 
     @Override
     public LoginResponseDto login (AuthRequestDto request) {

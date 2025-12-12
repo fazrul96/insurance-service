@@ -9,9 +9,9 @@ import com.insurance.policy.dto.request.PlanRequestDto;
 import com.insurance.policy.dto.response.PlanResponseDto;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.PlanService;
+import com.insurance.policy.util.common.LogUtils;
 import com.insurance.policy.util.enums.GenderEnum;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -22,23 +22,28 @@ import java.util.List;
 
 import static com.insurance.policy.util.common.StringUtils.generateReferenceNumber;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlanServiceImpl implements PlanService {
     private final PlanRepository planRepository;
     private final RuleSetRepository ruleSetRepository;
+    private final LogUtils logUtils;
+
+    @Override
+    public String getServiceName() {
+        return "PlanServiceImpl";
+    }
 
     @Override
     public Plan getPlan(String requestId, Long id) {
-        log.info("[RequestId: {}] Execute PlanServiceImpl.getPlan()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getPlan");
         return planRepository.findById(id)
                 .orElseThrow(() -> new WebException("Plan not found"));
     }
 
     @Override
     public PlanResponseDto generatePlan(PlanRequestDto request, String requestId) {
-        log.info("[RequestId: {}] Execute PlanServiceImpl.generatePlan()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "generatePlan");
 
         int age = calculateNearestAge(request.getDateOfBirth());
         GenderEnum gender = request.getGender();

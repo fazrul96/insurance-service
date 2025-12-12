@@ -11,4 +11,6 @@ public interface StorageClientService {
     UploadListResponseDto uploadFiles(String requestId, String userId, List<MultipartFile> files, String prefix);
 
     ResponseEntity<byte[]> processDownload(String requestId, String userId, String documentKey);
+
+    String getServiceName();
 }

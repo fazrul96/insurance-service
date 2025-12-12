@@ -8,4 +8,6 @@ public interface NotificationService {
     void notifyUser(NotificationRequestDto request);
 
     NotificationResponseDto getUserNotifications(String userId, String requestId);
+
+    String getServiceName();
 }

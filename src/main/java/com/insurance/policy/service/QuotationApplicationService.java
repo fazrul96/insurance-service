@@ -20,4 +20,6 @@ public interface QuotationApplicationService {
             String requestId, String userId, QuotationApplicationRequestDto request);
 
     QuotationApplicationResponseDto toQuotationApplicationResponse(QuotationApplication request);
+
+    String getServiceName();
 }

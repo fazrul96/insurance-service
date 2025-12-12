@@ -10,18 +10,18 @@ import com.insurance.policy.dto.response.BeneficiaryListResponseDto;
 import com.insurance.policy.dto.response.BeneficiaryResponseDto;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.BeneficiaryService;
+import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.insurance.policy.constants.GeneralConstant.LOG4j.*;
 import static com.insurance.policy.dto.request.NotificationRequestDto.buildNotification;
 import static com.insurance.policy.util.enums.NotificationTemplate.BENEFICIARY_CREATED;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BeneficiaryServiceImpl implements BeneficiaryService {
@@ -29,38 +29,42 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
     private final PolicyRepository policyRepository;
     private final NotificationServiceImpl notificationService;
     private final ValidationServiceImpl validationService;
+    private final LogUtils logUtils;
+
+    @Override
+    public String getServiceName() {
+        return "BeneficiaryServiceImpl";
+    }
 
     @Override
     public BeneficiaryListResponseDto getBeneficiaries(String requestId) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiaries()", requestId);
-
+        logUtils.logRequest(requestId, getServiceName() + GET_BENEFICIARIES);
         List<Beneficiary> beneficiaries = beneficiaryRepository.findAll();
         return new BeneficiaryListResponseDto(beneficiaries);
     }
 
     @Override
     public BeneficiaryListResponseDto getBeneficiariesByPolicyNo(String requestId, String policyNo) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiariesByPolicyNo()", requestId);
-
+        logUtils.logRequest(requestId, getServiceName() + GET_BENEFICIARIES_BY_POLICY_NO);
         List<Beneficiary> beneficiaries = beneficiaryRepository.findByPolicyNo(policyNo);
         return new BeneficiaryListResponseDto(beneficiaries);
     }
 
     @Override
     public BeneficiaryListResponseDto getBeneficiariesByPolicyId(String requestId, Long id) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiariesByPolicyId()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + GET_BENEFICIARIES_BY_POLICY_ID);
         return new BeneficiaryListResponseDto(beneficiaryRepository.findByPolicyId(id));
     }
 
     @Override
     public Beneficiary createBeneficiary(String requestId, Beneficiary request) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.createBeneficiary()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + CREATE_BENEFICIARY);
         return beneficiaryRepository.save(request);
     }
 
     @Override
     public BeneficiaryResponseDto createBeneficiaries(String requestId, String userId, BeneficiaryRequestDto request) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.createBeneficiaries()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + CREATE_BENEFICIARIES);
 
         Policy policy = getPolicyByPolicyNo(requestId, request.getPolicyNo());
         List<BeneficiaryDto> beneficiaries = request.getBeneficiaries();
@@ -85,23 +89,23 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
         }
 
         notificationService.notifyUser(buildNotification(userId, null, BENEFICIARY_CREATED));
-        return mapBeneficiaryResponseDto(request);
+        return toBeneficiaryResponseDto(request);
     }
 
     private Beneficiary getBeneficiaryById(String requestId, Long id) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getBeneficiaryById()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getBeneficiaryById");
         return beneficiaryRepository.findById(id)
                 .orElseThrow(() -> new WebException("Beneficiary not found"));
     }
 
-    private BeneficiaryResponseDto mapBeneficiaryResponseDto(BeneficiaryRequestDto request) {
+    private BeneficiaryResponseDto toBeneficiaryResponseDto(BeneficiaryRequestDto request) {
         return BeneficiaryResponseDto.builder()
                 .policyNo(request.getPolicyNo())
                 .beneficiaries(request.getBeneficiaries())
                 .build();
     }
 
-    private Beneficiary mapBeneficiary(BeneficiaryDto request, Long policyId) {
+    private Beneficiary toBeneficiary(BeneficiaryDto request, Long policyId) {
         return Beneficiary.builder()
                 .policyId(policyId)
                 .beneficiaryName(request.getBeneficiaryName())
@@ -118,7 +122,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
     }
 
     private void saveBeneficiaries(BeneficiaryDto beneficiaryDto, Long policyId) {
-        beneficiaryRepository.save(mapBeneficiary(beneficiaryDto, policyId));
+        beneficiaryRepository.save(toBeneficiary(beneficiaryDto, policyId));
     }
 
     private void deleteBeneficiaries(Long id) {
@@ -171,7 +175,7 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
     }
 
     private Policy getPolicyByPolicyNo(String requestId, String policyNo) {
-        log.info("[RequestId: {}] Execute BeneficiaryServiceImpl.getPolicyByPolicyNo()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getPolicyByPolicyNo");
         return policyRepository.findByPolicyNo(policyNo)
                 .orElseThrow(() -> new WebException("Policy Number not found"));
     }

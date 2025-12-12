@@ -5,6 +5,7 @@ import com.insurance.policy.data.repository.NotificationRepository;
 import com.insurance.policy.dto.request.NotificationRequestDto;
 import com.insurance.policy.dto.response.NotificationResponseDto;
 import com.insurance.policy.service.NotificationService;
+import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
+    private final LogUtils logUtils;
+
+    @Override
+    public String getServiceName() {
+        return "NotificationServiceImpl";
+    }
 
     @Override
     public void notifyUser(NotificationRequestDto request) {
@@ -25,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationResponseDto getUserNotifications(String userId, String requestId) {
-        log.info("[RequestId: {}] Execute NotificationServiceImpl.getUserNotifications()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getUserNotifications");
 
         List<Notification> response = notificationRepository.findByUserId(userId);
         return new NotificationResponseDto(response);

@@ -11,4 +11,6 @@ public interface PaymentService {
     PaymentSummaryResponseDto getPaymentsByStatus(String requestId, String status);
 
     PaymentResponseDto paymentProcess(String userId, PaymentRequestDto requestDto, String requestId);
+
+    String getServiceName();
 }

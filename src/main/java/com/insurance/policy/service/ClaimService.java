@@ -17,4 +17,6 @@ public interface ClaimService {
             String requestId, String userId, Long policyId, Long claimTypeId, List<MultipartFile> files, String prefix);
 
     Resource downloadByDocumentKey (String requestId, String userId, String keyName);
+
+    String getServiceName();
 }

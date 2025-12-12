@@ -20,4 +20,6 @@ public interface PolicyService {
 
     QuotationApplicationResponseDto createApplication(
             QuotationApplicationRequestDto requestDto, String userId, String requestId);
+
+    String getServiceName();
 }

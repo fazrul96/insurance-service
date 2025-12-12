@@ -36,24 +36,26 @@ public class ClaimController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_LIST)
     public ApiResponseDto<List<ClaimListResponseDto>> getAllClaims(RequestContext context) {
-        logRequest(context.getRequestId(), "ClaimController.getList()");
-        return handleRequest(context, () -> claimService.getAllClaims(context.getUserId()));
+        return handleRequest(getControllerName() + "getList",
+                context, () -> claimService.getAllClaims(context.getUserId())
+        );
     }
 
     @Operation(summary = "Retrieve claim details by claim ID.")
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_DETAIL)
     public ApiResponseDto<ClaimResponseDto> getClaimDetail(RequestContext context, @PathVariable Long claimId) {
-        logRequest(context.getRequestId(), "ClaimController.getClaimDetail()");
-        return handleRequest(context, () -> claimService.getClaimDetailsByClaimId(claimId));
+        return handleRequest(getControllerName() + "getClaimDetail",
+                context, () -> claimService.getClaimDetailsByClaimId(claimId)
+        );
     }
 
     @Operation(summary = "Fetch all policy documents for a specific user.")
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_POLICY_DOC)
     public ApiResponseDto<ClaimInfoResponse> getPolicyDocuments(RequestContext context) {
-        logRequest(context.getRequestId(), "ClaimController.getPolicyDocuments()");
-        return handleRequest(context, () -> claimService.getClaimInfoByUserId(
+        return handleRequest(getControllerName() + "getPolicyDocuments",
+                context, () -> claimService.getClaimInfoByUserId(
                 context.getRequestId(), context.getUserId())
         );
     }
@@ -67,8 +69,8 @@ public class ClaimController extends BaseController {
             @RequestParam("claimTypeId")  String claimTypeId,
             @RequestPart("files") List<MultipartFile> files
     ) {
-        logRequest(context.getRequestId(), "ClaimController.submitClaim()");
-        return handleRequest(context, () -> claimService.submitClaim(
+        return handleRequest(getControllerName() + "submitClaim",
+                context, () -> claimService.submitClaim(
                 context.getRequestId(), context.getUserId(), Long.valueOf(policyId),
                 Long.valueOf(claimTypeId), files, context.getPrefix())
         );
@@ -80,8 +82,6 @@ public class ClaimController extends BaseController {
     public ResponseEntity<Resource> downloadClaimFile(
             RequestContext context, @RequestParam("documentKey") String documentKey
     ) {
-        logRequest(context.getRequestId(), "ClaimController.downloadClaimFile()");
-
         Resource response = claimService.downloadByDocumentKey(
                 context.getRequestId(), context.getUserId(), documentKey
         );

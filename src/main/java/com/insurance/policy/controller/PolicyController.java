@@ -31,8 +31,8 @@ public class PolicyController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_POLICIES)
     public ApiResponseDto<PolicySummaryResponseDto> getAllPolicies(RequestContext context) {
-        logRequest(context.getRequestId(), "PolicyController.getAllPolicies()");
-        return handleRequest(context, () -> policyService.getAllPolicies(context.getRequestId()));
+        return handleRequest(getControllerName() + "getAllPolicies",
+                context, () -> policyService.getAllPolicies(context.getRequestId()));
     }
 
     @Operation(summary = "Fetch policy with Id")
@@ -41,8 +41,8 @@ public class PolicyController extends BaseController {
     public ApiResponseDto<PolicyResponseDto> getPolicyWithId(
             RequestContext context, @PathVariable Long id
     ) {
-        logRequest(context.getRequestId(), "PolicyController.getPolicyWithId()");
-        return handleRequest(context, () -> policyService.getPolicyById(context.getRequestId(), id));
+        return handleRequest(getControllerName() + "getPolicyWithId",
+                context, () -> policyService.getPolicyById(context.getRequestId(), id));
     }
 
     @Operation(summary = "Create Application")
@@ -57,9 +57,9 @@ public class PolicyController extends BaseController {
                     required = true
             ) final QuotationApplicationRequestDto request
     ) {
-        logRequest(context.getRequestId(), "PolicyController.createApplication()");
-        return handleRequest(context, () -> policyService.createApplication(
-                request, context.getUserId(), context.getRequestId()));
+        return handleRequest(getControllerName() + "createApplication",
+                context, () -> policyService.createApplication(
+                        request, context.getUserId(), context.getRequestId()));
     }
 
     @Operation(summary = "Create Beneficiaries")
@@ -74,8 +74,8 @@ public class PolicyController extends BaseController {
                     required = true
             ) final BeneficiaryRequestDto request
     ) {
-        logRequest(context.getRequestId(), "PolicyController.upsertAllBeneficiaries()");
-        return handleRequest(context, () -> beneficiaryService.createBeneficiaries(
+        return handleRequest(getControllerName() + "upsertAllBeneficiaries",
+                context, () -> beneficiaryService.createBeneficiaries(
                 context.getRequestId(), context.getUserId(), request));
     }
 }

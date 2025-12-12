@@ -38,8 +38,8 @@ public class LoginController extends BaseController {
                     required = true
             ) final AuthRequestDto request
     ) {
-        logRequest(context.getRequestId(), "LoginController.loginUser()");
-        return handleRequest(context, () -> authService.login(request));
+        return handleRequest(getControllerName() + "loginUser",
+                context, () -> authService.login(request));
     }
 
     @Operation(summary = "Login User Auth0")
@@ -54,7 +54,7 @@ public class LoginController extends BaseController {
                     required = true
             ) final User request
     ) {
-        logRequest(context.getRequestId(), "LoginController.loginUserWithAuth0()");
-        return handleRequest(context, () -> authService.loginAuth0(request));
+        return handleRequest(getControllerName() + "loginUserWithAuth0",
+                context, () -> authService.loginAuth0(request));
     }
 }

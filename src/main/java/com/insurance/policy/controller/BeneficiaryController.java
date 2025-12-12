@@ -32,8 +32,8 @@ public class BeneficiaryController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.BENEFICIARY_LIST)
     public ApiResponseDto<BeneficiaryListResponseDto> getBeneficiaries(RequestContext context) {
-        logRequest(context.getRequestId(), getControllerName() + GET_BENEFICIARIES);
-        return handleRequest(context, () -> beneficiaryService.getBeneficiaries(context.getRequestId()));
+        return handleRequest(getControllerName() + GET_BENEFICIARIES,
+                context, () -> beneficiaryService.getBeneficiaries(context.getRequestId()));
     }
 
     /**
@@ -48,9 +48,8 @@ public class BeneficiaryController extends BaseController {
     public ApiResponseDto<BeneficiaryListResponseDto> getBeneficiariesByPolicyNo(
             RequestContext context, @PathVariable("policyNo") String policyNo
     ) {
-        logRequest(context.getRequestId(), getControllerName() + GET_BENEFICIARIES_BY_POLICY_NO);
-        return handleRequest(context, () -> beneficiaryService.getBeneficiariesByPolicyNo(
-                context.getRequestId(), policyNo)
+        return handleRequest(getControllerName() + GET_BENEFICIARIES_BY_POLICY_NO,
+                context, () -> beneficiaryService.getBeneficiariesByPolicyNo(context.getRequestId(), policyNo)
         );
     }
 
@@ -66,8 +65,8 @@ public class BeneficiaryController extends BaseController {
     public ApiResponseDto<BeneficiaryListResponseDto> getBeneficiariesByPolicyId(
             RequestContext context, @PathVariable("policyId") Long policyId
     ) {
-        logRequest(context.getRequestId(), GET_BENEFICIARIES_BY_POLICY_ID);
-        return handleRequest(context, () -> beneficiaryService.getBeneficiariesByPolicyId(
+        return handleRequest(getControllerName() + GET_BENEFICIARIES_BY_POLICY_ID,
+                context, () -> beneficiaryService.getBeneficiariesByPolicyId(
                 context.getRequestId(), policyId)
         );
     }
@@ -84,8 +83,8 @@ public class BeneficiaryController extends BaseController {
                     required = true
             ) final BeneficiaryRequestDto request
     ) {
-        logRequest(context.getRequestId(), POST_BENEFICIARIES);
-        return handleRequest(context, () -> beneficiaryService.createBeneficiaries(
+        return handleRequest(getControllerName() + CREATE_BENEFICIARIES,
+                context, () -> beneficiaryService.createBeneficiaries(
                 context.getRequestId(), context.getUserId() ,request)
         );
     }

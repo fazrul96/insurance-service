@@ -29,8 +29,8 @@ public class NotificationController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_NOTIFICATIONS)
     public ApiResponseDto<NotificationResponseDto>getAllNotifications(RequestContext context) {
-        logRequest(context.getRequestId(), "NotificationController.getAllNotifications()");
-        return handleRequest(context, () -> notificationServiceImpl.getUserNotifications(
+        return handleRequest(getControllerName() + "getAllNotifications",
+                context, () -> notificationServiceImpl.getUserNotifications(
                 context.getUserId(), context.getRequestId())
         );
     }

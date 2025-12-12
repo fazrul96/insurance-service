@@ -12,23 +12,28 @@ import com.insurance.policy.dto.response.QuotationApplicationResponseDto;
 import com.insurance.policy.dto.response.QuotationApplicationSummaryResponseDto;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.QuotationApplicationService;
+import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class QuotationApplicationServiceImpl implements QuotationApplicationService {
     private final QuotationApplicationRepository quotationApplicationRepository;
     private final PlanServiceImpl planService;
     private final UserServiceImpl userService;
+    private final LogUtils logUtils;
+
+    @Override
+    public String getServiceName() {
+        return "QuotationApplicationServiceImpl";
+    }
 
     @Override
     public QuotationApplicationSummaryResponseDto getAllQuotations(String requestId) {
-        log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getAllQuotations()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getAllQuotations");
 
         List<QuotationApplicationResponseDto> response = quotationApplicationRepository.findAll()
                 .stream()
@@ -40,14 +45,14 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
 
     @Override
     public QuotationApplication getQuotationsById(String requestId, Long id) {
-        log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getQuotationsById()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getQuotationsById");
         return quotationApplicationRepository.findById(id)
                 .orElseThrow(() -> new WebException("Quotation not found"));
     }
 
     @Override
     public QuotationApplicationSummaryResponseDto getQuotationsByStatus(String requestId, String applicationStatus) {
-        log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getQuotationsByStatus()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getQuotationsByStatus");
 
         List<QuotationApplicationResponseDto> response = quotationApplicationRepository
                 .findByApplicationStatus(applicationStatus)
@@ -60,7 +65,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
 
     @Override
     public QuotationApplicationSummaryResponseDto getQuotationsByUserId(String requestId, String userId) {
-        log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.getQuotationsByUserId()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getQuotationsByUserId");
 
         List<QuotationApplicationResponseDto> response = quotationApplicationRepository.findByUserId(userId)
                 .stream()
@@ -78,7 +83,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
     @Override
     public QuotationApplicationResponseDto processQuotation(
             String requestId, String userId, QuotationApplicationRequestDto request) {
-        log.info("[RequestId: {}] Execute QuotationApplicationServiceImpl.processQuotation()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "processQuotation");
 
         PersonDto person = request.getPersonDto();
         PlanInfoDto planInfo = request.getPlanInfoDto();

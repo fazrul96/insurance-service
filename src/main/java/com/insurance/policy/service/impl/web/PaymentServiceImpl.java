@@ -11,9 +11,9 @@ import com.insurance.policy.dto.response.PaymentResponseDto;
 import com.insurance.policy.dto.response.PaymentSummaryResponseDto;
 import com.insurance.policy.service.PaymentService;
 import com.insurance.policy.service.QuotationApplicationService;
+import com.insurance.policy.util.common.LogUtils;
 import com.insurance.policy.util.enums.PaymentStatus;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,17 +25,22 @@ import static com.insurance.policy.util.enums.NotificationTemplate.PAYMENT_FAILE
 import static com.insurance.policy.util.enums.NotificationTemplate.PAYMENT_SUCCESS;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PolicyServiceImpl policyService;
     private final QuotationApplicationService quotationApplicationService;
     private final NotificationServiceImpl notificationService;
+    private final LogUtils logUtils;
+
+    @Override
+    public String getServiceName() {
+        return "PaymentServiceImpl";
+    }
 
     @Override
     public PaymentSummaryResponseDto getAllPayments(String requestId) {
-        log.info("[RequestId: {}] Execute PaymentServiceImpl.getAllPayments()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getAllPayments");
 
         List<PaymentDetailsDto> response = paymentRepository.findAll()
                 .stream()
@@ -47,7 +52,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentSummaryResponseDto getPaymentsByStatus(String requestId, String status) {
-        log.info("[RequestId: {}] Execute PaymentServiceImpl.getPaymentsByStatus()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getPaymentsByStatus");
 
         List<PaymentDetailsDto> response = paymentRepository.findByPaymentStatus(status)
                 .stream()
@@ -59,7 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponseDto paymentProcess(String userId, PaymentRequestDto requestDto, String requestId) {
-        log.info("[RequestId: {}] Execute PaymentServiceImpl.paymentProcess()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "paymentProcess");
 
         if (!PaymentStatus.SUCCESS.equals(requestDto.getPaymentStatus())) {
             policyService.updateStatusAndPayment(

@@ -18,8 +18,8 @@ import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.NotificationService;
 import com.insurance.policy.service.PolicyService;
 import com.insurance.policy.service.QuotationApplicationService;
+import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,18 +30,22 @@ import static com.insurance.policy.util.common.StringUtils.generateReferenceNumb
 import static com.insurance.policy.util.enums.NotificationTemplate.QUOTATION_CREATED;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class PolicyServiceImpl implements PolicyService {
     private final PolicyRepository policyRepository;
     private final QuotationApplicationService quotationApplicationService;
     private final NotificationService notificationService;
+    private final LogUtils logUtils;
     private static final long ONE_YEAR_MILLIS = 31_536_000_000L;
 
     @Override
-    public PolicySummaryResponseDto getAllPolicies(String requestId) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.getAllPolicies()", requestId);
+    public String getServiceName() {
+        return "PolicyServiceImpl";
+    }
 
+    @Override
+    public PolicySummaryResponseDto getAllPolicies(String requestId) {
+        logUtils.logRequest(requestId, getServiceName() + "getAllPolicies");
         List<PolicyResponseDto> policies = policyRepository.findAll()
                 .stream()
                 .map(this::toPolicyResponse)
@@ -52,8 +56,7 @@ public class PolicyServiceImpl implements PolicyService {
 
     @Override
     public PolicySummaryResponseDto getPolicyByUserId(Long userId, String requestId) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyByUserId()", requestId);
-
+        logUtils.logRequest(requestId, getServiceName() + "getPolicyByUserId");
         List<PolicyResponseDto> policies = policyRepository.findByUserId(userId)
                 .stream()
                 .map(this::toPolicyResponse)
@@ -64,8 +67,7 @@ public class PolicyServiceImpl implements PolicyService {
 
     @Override
     public PolicySummaryResponseDto getPolicyByUserKey(String requestId, String userId) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyByUserKey()", requestId);
-
+        logUtils.logRequest(requestId, getServiceName() + "getPolicyByUserKey");
         List<PolicyResponseDto> policies = policyRepository.findByUserKey(userId)
                 .stream()
                 .map(this::toPolicyResponse)
@@ -76,7 +78,7 @@ public class PolicyServiceImpl implements PolicyService {
 
     @Override
     public PolicyResponseDto getPolicyById(String requestId, Long id) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.getPolicyById()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "getPolicyById");
         Policy policy = policyRepository.findById(id)
                 .orElseThrow(() -> new WebException("Policy not found"));
 
@@ -84,7 +86,7 @@ public class PolicyServiceImpl implements PolicyService {
     }
 
     public Policy findPolicyById(String requestId, Long id) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.findPolicyById()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "findPolicyById");
         return policyRepository.findById(id)
                 .orElseThrow(() -> new WebException("Policy not found"));
     }
@@ -109,7 +111,7 @@ public class PolicyServiceImpl implements PolicyService {
     @Override
     public QuotationApplicationResponseDto createApplication(
             QuotationApplicationRequestDto requestDto, String userId, String requestId) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.createApplication()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "createApplication");
         notificationService.notifyUser(buildNotification(requestId, null, QUOTATION_CREATED));
         return quotationApplicationService.processQuotation(requestId, userId, requestDto);
     }
@@ -119,7 +121,7 @@ public class PolicyServiceImpl implements PolicyService {
     }
 
     public void updateStatusAndPayment(Long applicationId, String status, Payment payment, String requestId) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.updateStatusAndPayment()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "updateStatusAndPayment");
 
         QuotationApplication application = quotationApplicationService.getQuotationsById(requestId, applicationId);
 
@@ -130,7 +132,7 @@ public class PolicyServiceImpl implements PolicyService {
     public PaymentResponseDto processPolicyPayment(
             PaymentRequestDto request, Payment payment, QuotationApplication application,
             PaymentDetailsDto paymentDetails, String requestId) {
-        log.info("[RequestId: {}] Execute PolicyServiceImpl.processPolicyPayment()", requestId);
+        logUtils.logRequest(requestId, getServiceName() + "processPolicyPayment");
         updateStatusAndPayment(request.getQuotationId(), ResponseMessages.SUCCESS, payment, requestId);
 
         Policy policy = createPolicy(toPolicy(application, payment));
@@ -173,5 +175,4 @@ public class PolicyServiceImpl implements PolicyService {
                 .payment(payment)
                 .build();
     }
-
 }

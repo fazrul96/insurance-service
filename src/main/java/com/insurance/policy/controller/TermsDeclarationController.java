@@ -29,7 +29,7 @@ public class TermsDeclarationController extends BaseController {
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.GET_TERMS)
     public ApiResponseDto<TermsDeclarationResponseDto> getActiveTerms(RequestContext context) {
-        logRequest(context.getRequestId(), "TermsDeclarationController.getActiveTerms()");
-        return handleRequest(context, () -> termsDeclarationService.getAllTerms(context.getRequestId()));
+        return handleRequest(getControllerName() + "getActiveTerms",
+                context, () -> termsDeclarationService.getAllTerms(context.getRequestId()));
     }
 }
