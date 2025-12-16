@@ -6,7 +6,7 @@ import com.insurance.policy.data.entity.User;
 import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.request.AuthRequestDto;
 import com.insurance.policy.dto.response.ApiResponseDto;
-import com.insurance.policy.dto.response.LoginResponseDto;
+import com.insurance.policy.dto.response.AuthResponseDto;
 import com.insurance.policy.service.impl.auth.AuthServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path = "${app.privateApiPath}")
+@RequestMapping(path = "${app.publicApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class LoginController extends BaseController {
     private final AuthServiceImpl authService;
@@ -29,7 +29,7 @@ public class LoginController extends BaseController {
     @Operation(summary = "Login User")
     @DefaultApiResponses
     @PostMapping(path = ApiConstant.INSURANCE.LOGIN)
-    public ApiResponseDto<LoginResponseDto> loginUser(
+    public ApiResponseDto<AuthResponseDto> loginUser(
             RequestContext context,
             @Valid @RequestBody
             @Parameter(
@@ -39,13 +39,13 @@ public class LoginController extends BaseController {
             ) final AuthRequestDto request
     ) {
         return handleRequest(getControllerName() + "loginUser",
-                context, () -> authService.login(request));
+                context, () -> authService.login(context.getRequestId(), request));
     }
 
     @Operation(summary = "Login User Auth0")
     @DefaultApiResponses
     @PostMapping(path = ApiConstant.INSURANCE.LOGIN_AUTH0)
-    public ApiResponseDto<LoginResponseDto> loginUserWithAuth0(
+    public ApiResponseDto<AuthResponseDto> loginUserWithAuth0(
             RequestContext context,
             @Valid @RequestBody
             @Parameter(
@@ -55,6 +55,6 @@ public class LoginController extends BaseController {
             ) final User request
     ) {
         return handleRequest(getControllerName() + "loginUserWithAuth0",
-                context, () -> authService.loginAuth0(request));
+                context, () -> authService.loginAuth0(context.getRequestId(), request));
     }
 }

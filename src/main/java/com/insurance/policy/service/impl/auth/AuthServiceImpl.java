@@ -3,8 +3,10 @@ package com.insurance.policy.service.impl.auth;
 import com.insurance.policy.data.entity.User;
 import com.insurance.policy.data.repository.UserRepository;
 import com.insurance.policy.dto.request.AuthRequestDto;
-import com.insurance.policy.dto.response.LoginResponseDto;
+import com.insurance.policy.dto.response.AuthResponseDto;
+import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.AuthService;
+import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final Auth0Client auth0Client;
     private final PasswordEncoder passwordEncoder;
+    private final LogUtils logUtils;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
@@ -33,40 +36,53 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponseDto login (AuthRequestDto request) {
+    public AuthResponseDto login (String requestId, AuthRequestDto request) {
+        logUtils.logRequest(requestId, getServiceName() + "login");
+
         authenticate(request);
 
         User user = findUserByEmail(request.getEmail());
-        return mapLoginResponseDto(user, fetchUserAccessToken());
+        return toAuthResponseDto(user, fetchUserAccessToken());
     }
 
     @Override
     @Transactional
-    public LoginResponseDto loginAuth0(User request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElse(null);
+    public AuthResponseDto loginAuth0(String requestId, User request) {
+        logUtils.logRequest(requestId, getServiceName() + "loginAuth0");
 
-        if (user == null) {
-            registerUser(user);
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseGet(() -> registerUser(requestId, request, true));
+
+        return toAuthResponseDto(user, fetchUserAccessToken());
+    }
+
+    @Override
+    public AuthResponseDto register(String requestId, User request) {
+        logUtils.logRequest(requestId, getServiceName() + "register");
+
+        return toAuthResponseDto(registerUser(requestId, request, false), fetchUserAccessToken());
+    }
+
+    private User registerUser(String requestId, User user, boolean isAuth0) {
+        logUtils.logRequest(requestId, getServiceName() + "registerUser");
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new WebException("Email already exists!");
         }
 
-        return mapLoginResponseDto(user, fetchUserAccessToken());
+        if (!isAuth0) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else {
+            user.setPassword(passwordEncoder.encode(generateRandomPassword()));
+        }
+
+        user.setUserId(UUID.randomUUID().toString());
+        return userRepository.save(user);
     }
 
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-
-    @Override
-    public void registerUser(User user) {
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already exists!");
-        }
-
-        user.setPassword(passwordEncoder.encode(generateRandomPassword()));
-        user.setUserId(UUID.randomUUID().toString());
-        userRepository.save(user);
     }
 
     private String generateRandomPassword() {
@@ -75,14 +91,13 @@ public class AuthServiceImpl implements AuthService {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
-    private LoginResponseDto mapLoginResponseDto(User user, String token) {
-        LoginResponseDto responseDto = new LoginResponseDto();
-        responseDto.setEmail(user.getEmail());
-        responseDto.setToken(token);
-        responseDto.setUsername(user.getUsername());
-        responseDto.setUserId(user.getUserId());
-
-        return responseDto;
+    private AuthResponseDto toAuthResponseDto(User user, String token) {
+        return AuthResponseDto.builder()
+                .email(user.getEmail())
+                .token(token)
+                .userId(user.getUsername())
+                .username(user.getUserId())
+                .build();
     }
 
     private String fetchUserAccessToken() {

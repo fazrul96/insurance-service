@@ -2,14 +2,14 @@ package com.insurance.policy.service;
 
 import com.insurance.policy.data.entity.User;
 import com.insurance.policy.dto.request.AuthRequestDto;
-import com.insurance.policy.dto.response.LoginResponseDto;
+import com.insurance.policy.dto.response.AuthResponseDto;
 
 public interface AuthService {
-    void registerUser(User user);
+    AuthResponseDto register(String requestId, User user);
 
-    LoginResponseDto login (AuthRequestDto request);
+    AuthResponseDto login (String requestId, AuthRequestDto request);
 
-    LoginResponseDto loginAuth0 (User request);
+    AuthResponseDto loginAuth0 (String requestId, User request);
 
     String getServiceName();
 }

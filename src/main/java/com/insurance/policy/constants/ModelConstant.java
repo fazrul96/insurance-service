@@ -25,6 +25,7 @@ public class ModelConstant {
         public static final String POLICY = "policy";
         public static final String QUOTATION_APPLICATION = "quotation_application";
         public static final String TERMS_DECLARATION = "terms_declaration";
+        public static final String RISK_PROFILE = "risk_profile";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
