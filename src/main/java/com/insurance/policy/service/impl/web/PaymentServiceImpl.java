@@ -77,8 +77,11 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = createPayment(mapPayment(requestDto));
         PaymentDetailsDto paymentDetailsDto = mapPaymentDetails(payment);
 
+        QuotationApplication quotationApplication = quotationApplicationService
+                .getQuotationsById(requestId, requestDto.getQuotationId());
+
         PaymentResponseDto responseDto = policyService.processPolicyPayment(
-                requestDto, payment, (QuotationApplication) quotationApplicationService, paymentDetailsDto, requestId
+                requestDto, payment, quotationApplication, paymentDetailsDto, requestId
         );
 
         notificationService.notifyUser(buildNotification(userId, 1L, PAYMENT_SUCCESS));
