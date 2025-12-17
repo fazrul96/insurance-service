@@ -70,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
             policyService.updateStatusAndPayment(
                     requestDto.getQuotationId(), ResponseMessages.FAILURE, null, requestId);
 
-            notificationService.notifyUser(buildNotification(null, 1L, PAYMENT_FAILED));
+            notificationService.notifyUser(buildNotification(userId, 1L, PAYMENT_FAILED));
             return PaymentResponseDto.failure("Payment failed, application marked as FAILED.");
         }
 

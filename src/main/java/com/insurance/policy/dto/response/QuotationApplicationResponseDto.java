@@ -33,6 +33,6 @@ public class QuotationApplicationResponseDto {
     private String occupation;
     private String purposeOfTransaction;
     private String applicationStatus;
-    private Plan plan;
+    // private Plan plan;
     private PlanInfoDto planResponseDto;
 }

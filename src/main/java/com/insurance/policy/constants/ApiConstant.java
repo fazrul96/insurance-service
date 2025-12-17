@@ -15,6 +15,7 @@ public class ApiConstant {
         public static final String GET_TERMS = "terms";
         public static final String GET_POLICIES = "policy/getAll";
         public static final String GET_POLICY_WITH_ID = "policy/{id}";
+        public static final String GET_POLICY_DETAILS_WITH_ID = "policy/details/{id}";
         public static final String GET_POLICY_WITH_ID_AND_QUOTATION = "policy/quotation/{id}";
         public static final String CREATE_APPLICATION = "policy/create-application";
         public static final String CREATE_BENEFICIARIES = "policy/beneficiary";

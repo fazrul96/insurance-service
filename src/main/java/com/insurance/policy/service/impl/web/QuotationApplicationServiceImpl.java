@@ -11,6 +11,7 @@ import com.insurance.policy.dto.QuotationApplicationRequestDto;
 import com.insurance.policy.dto.response.QuotationApplicationResponseDto;
 import com.insurance.policy.dto.response.QuotationApplicationSummaryResponseDto;
 import com.insurance.policy.exception.WebException;
+import com.insurance.policy.service.NotificationService;
 import com.insurance.policy.service.QuotationApplicationService;
 import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.insurance.policy.dto.request.NotificationRequestDto.buildNotification;
+import static com.insurance.policy.util.enums.NotificationTemplate.QUOTATION_CREATED;
+
 @Service
 @RequiredArgsConstructor
 public class QuotationApplicationServiceImpl implements QuotationApplicationService {
     private final QuotationApplicationRepository quotationApplicationRepository;
     private final PlanServiceImpl planService;
     private final UserServiceImpl userService;
+    private final NotificationService notificationService;
     private final LogUtils logUtils;
 
     @Override
@@ -91,7 +96,10 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
         Plan plan = planService.getPlan(requestId, planInfo.getId());
 
         QuotationApplication application = toQuotationApplication(person, planInfo, user, plan);
-        return toQuotationApplicationResponse(createQuotation(application));
+        QuotationApplication response = createQuotation(application);
+
+        notificationService.notifyUser(buildNotification(userId, null, QUOTATION_CREATED));
+        return toQuotationApplicationResponse(response);
     }
 
     private QuotationApplication toQuotationApplication(
@@ -140,7 +148,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
                 .occupation(request.getOccupation())
                 .phoneNo(request.getPhoneNo())
                 .purposeOfTransaction(request.getPurposeOfTransaction())
-                .plan(request.getPlan())
+                // .plan(request.getPlan())
                 .build();
     }
 }

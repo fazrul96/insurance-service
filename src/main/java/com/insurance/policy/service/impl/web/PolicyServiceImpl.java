@@ -15,9 +15,7 @@ import com.insurance.policy.dto.response.PolicyResponseDto;
 import com.insurance.policy.dto.response.PolicySummaryResponseDto;
 import com.insurance.policy.dto.response.QuotationApplicationResponseDto;
 import com.insurance.policy.exception.WebException;
-import com.insurance.policy.service.NotificationService;
 import com.insurance.policy.service.PolicyService;
-import com.insurance.policy.service.QuotationApplicationService;
 import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,16 +23,14 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 
-import static com.insurance.policy.dto.request.NotificationRequestDto.buildNotification;
 import static com.insurance.policy.util.common.StringUtils.generateReferenceNumber;
-import static com.insurance.policy.util.enums.NotificationTemplate.QUOTATION_CREATED;
 
 @Service
 @RequiredArgsConstructor
 public class PolicyServiceImpl implements PolicyService {
     private final PolicyRepository policyRepository;
-    private final QuotationApplicationService quotationApplicationService;
-    private final NotificationService notificationService;
+    private final QuotationApplicationServiceImpl quotationApplicationService;
+    private final BeneficiaryServiceImpl beneficiaryService;
     private final LogUtils logUtils;
     private static final long ONE_YEAR_MILLIS = 31_536_000_000L;
 
@@ -85,6 +81,23 @@ public class PolicyServiceImpl implements PolicyService {
         return toPolicyResponse(policy);
     }
 
+    public PolicyResponseDto getPolicyDetailsById(String requestId, String userId, Long policyId) {
+        logUtils.logRequest(requestId, getServiceName() + "getPolicyDetailsById");
+        Policy policy = policyRepository.findDetailsById(userId, policyId)
+                .orElseThrow(() -> new WebException("Policy details not found"));
+
+        QuotationApplicationResponseDto quotationApplication = new QuotationApplicationResponseDto();
+        if (policy.getQuotationApplication() != null) {
+            quotationApplication = quotationApplicationService
+                    .toQuotationApplicationResponse(policy.getQuotationApplication());
+        }
+
+        PolicyResponseDto response = toPolicyResponse(policy);
+        response.setApplicationResponseDto(quotationApplication);
+        response.setBeneficiaryList(beneficiaryService.getBeneficiaryListByPolicyId(requestId, policyId));
+        return response;
+    }
+
     public Policy findPolicyById(String requestId, Long id) {
         logUtils.logRequest(requestId, getServiceName() + "findPolicyById");
         return policyRepository.findById(id)
@@ -112,7 +125,6 @@ public class PolicyServiceImpl implements PolicyService {
     public QuotationApplicationResponseDto createApplication(
             QuotationApplicationRequestDto requestDto, String userId, String requestId) {
         logUtils.logRequest(requestId, getServiceName() + "createApplication");
-        notificationService.notifyUser(buildNotification(requestId, null, QUOTATION_CREATED));
         return quotationApplicationService.processQuotation(requestId, userId, requestDto);
     }
 

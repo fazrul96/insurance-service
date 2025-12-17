@@ -57,6 +57,23 @@ public class BeneficiaryServiceImpl implements BeneficiaryService {
     }
 
     @Override
+    public List<BeneficiaryDto> getBeneficiaryListByPolicyId(String requestId, Long id) {
+        logUtils.logRequest(requestId, getServiceName() + GET_BENEFICIARY_LIST_BY_POLICY_ID);
+        List<Beneficiary> beneficiaries = beneficiaryRepository.findByPolicyId(id);
+
+        return beneficiaries.stream()
+                .map(b -> BeneficiaryDto.builder()
+                        .id(b.getId())
+                        .policyId(b.getPolicyId())
+                        .beneficiaryName(b.getBeneficiaryName())
+                        .relationshipToInsured(b.getRelationshipToInsured())
+                        .share(b.getShare())
+                        .build()
+                )
+                .toList();
+    }
+
+    @Override
     public Beneficiary createBeneficiary(String requestId, Beneficiary request) {
         logUtils.logRequest(requestId, getServiceName() + CREATE_BENEFICIARY);
         return beneficiaryRepository.save(request);

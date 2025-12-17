@@ -51,6 +51,7 @@ public final class GeneralConstant {
         public static final String GET_BENEFICIARIES = "getBeneficiaries";
         public static final String GET_BENEFICIARIES_BY_POLICY_NO = "getBeneficiariesByPolicyNo";
         public static final String GET_BENEFICIARIES_BY_POLICY_ID = "getBeneficiariesByPolicyId";
+        public static final String GET_BENEFICIARY_LIST_BY_POLICY_ID = "getBeneficiaryListByPolicyId";
         public static final String CREATE_BENEFICIARIES = "createBeneficiaries";
         public static final String CREATE_BENEFICIARY = "createBeneficiary";
 

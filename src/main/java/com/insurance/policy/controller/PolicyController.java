@@ -45,6 +45,17 @@ public class PolicyController extends BaseController {
                 context, () -> policyService.getPolicyById(context.getRequestId(), id));
     }
 
+    @Operation(summary = "Fetch policy details with Id")
+    @DefaultApiResponses
+    @GetMapping(path = ApiConstant.INSURANCE.GET_POLICY_DETAILS_WITH_ID)
+    public ApiResponseDto<PolicyResponseDto> getPolicyDetailsWithId(
+            RequestContext context, @PathVariable Long id
+    ) {
+        return handleRequest(getControllerName() + "getPolicyDetailsWithId",
+                context, () -> policyService.getPolicyDetailsById(
+                        context.getRequestId(), context.getUserId(), id));
+    }
+
     @Operation(summary = "Create Application")
     @DefaultApiResponses
     @PostMapping(path = ApiConstant.INSURANCE.CREATE_APPLICATION)
