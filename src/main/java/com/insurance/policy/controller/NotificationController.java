@@ -5,7 +5,7 @@ import com.insurance.policy.constants.ApiConstant;
 import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.NotificationResponseDto;
-import com.insurance.policy.service.impl.web.NotificationServiceImpl;
+import com.insurance.policy.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class NotificationController extends BaseController {
-    private final NotificationServiceImpl notificationServiceImpl;
+    private final NotificationService notificationService;
 
     @Override
     protected String getControllerName() {
@@ -30,7 +30,7 @@ public class NotificationController extends BaseController {
     @GetMapping(path = ApiConstant.INSURANCE.GET_NOTIFICATIONS)
     public ApiResponseDto<NotificationResponseDto>getAllNotifications(RequestContext context) {
         return handleRequest(getControllerName() + "getAllNotifications",
-                context, () -> notificationServiceImpl.getUserNotifications(
+                context, () -> notificationService.getUserNotifications(
                 context.getUserId(), context.getRequestId())
         );
     }

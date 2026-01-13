@@ -6,7 +6,7 @@ import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.request.PlanRequestDto;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.PlanResponseDto;
-import com.insurance.policy.service.impl.web.PlanServiceImpl;
+import com.insurance.policy.service.PlanService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class PlanController extends BaseController {
-    private final PlanServiceImpl planServiceImpl;
+    private final PlanService planService;
 
     @Override
     protected String getControllerName() {
@@ -48,6 +48,6 @@ public class PlanController extends BaseController {
             ) final PlanRequestDto request
     ) {
         return handleRequest(getControllerName() + "generateQuotationPlans",
-                context, () -> planServiceImpl.generatePlan(request, context.getRequestId()));
+                context, () -> planService.generatePlan(request, context.getRequestId()));
     }
 }

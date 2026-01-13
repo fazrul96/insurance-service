@@ -9,7 +9,9 @@ import com.insurance.policy.dto.PaymentDetailsDto;
 import com.insurance.policy.dto.request.PaymentRequestDto;
 import com.insurance.policy.dto.response.PaymentResponseDto;
 import com.insurance.policy.dto.response.PaymentSummaryResponseDto;
+import com.insurance.policy.service.NotificationService;
 import com.insurance.policy.service.PaymentService;
+import com.insurance.policy.service.PolicyService;
 import com.insurance.policy.service.QuotationApplicationService;
 import com.insurance.policy.util.common.LogUtils;
 import com.insurance.policy.util.enums.PaymentStatus;
@@ -28,9 +30,9 @@ import static com.insurance.policy.util.enums.NotificationTemplate.PAYMENT_SUCCE
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
-    private final PolicyServiceImpl policyService;
+    private final PolicyService policyService;
     private final QuotationApplicationService quotationApplicationService;
-    private final NotificationServiceImpl notificationService;
+    private final NotificationService notificationService;
     private final LogUtils logUtils;
 
     @Override

@@ -5,7 +5,7 @@ import com.insurance.policy.constants.ApiConstant;
 import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.TermsDeclarationResponseDto;
-import com.insurance.policy.service.impl.web.TermsDeclarationServiceImpl;
+import com.insurance.policy.service.TermsDeclarationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class TermsDeclarationController extends BaseController {
-    private final TermsDeclarationServiceImpl termsDeclarationService;
+    private final TermsDeclarationService termsDeclarationService;
 
     @Override
     protected String getControllerName() {

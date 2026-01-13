@@ -7,17 +7,14 @@ import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.ClaimInfoResponse;
 import com.insurance.policy.dto.response.ClaimListResponseDto;
 import com.insurance.policy.dto.response.ClaimResponseDto;
-import com.insurance.policy.service.impl.web.ClaimServiceImpl;
-import com.insurance.policy.util.common.StringUtils;
+import com.insurance.policy.service.ClaimService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,7 +22,7 @@ import java.util.List;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class ClaimController extends BaseController {
-    private final ClaimServiceImpl claimService;
+    private final ClaimService claimService;
 
     @Override
     protected String getControllerName() {
@@ -79,17 +76,18 @@ public class ClaimController extends BaseController {
     @Operation(summary = "Download a claim file by its key name")
     @DefaultApiResponses
     @GetMapping(path = ApiConstant.INSURANCE.CLAIM_DOWNLOAD)
-    public ResponseEntity<Resource> downloadClaimFile(
-            RequestContext context, @RequestParam("documentKey") String documentKey
-    ) {
-        Resource response = claimService.downloadByDocumentKey(
-                context.getRequestId(), context.getUserId(), documentKey
-        );
-        String filename = StringUtils.extractFileNameFromPath(documentKey);
+//    public void downloadClaimFile(RequestContext context, @RequestParam("documentKey") String documentKey,
+//                                  HttpServletResponse response) {
+//        claimService.downloadByDocumentKey(context.getRequestId(), context.getUserId(), documentKey, response);
+//    }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(response);
+    public void downloadClaim(@RequestParam String documentKey,
+                              HttpServletResponse response) throws IOException {
+
+        String queryParam = "?documentKey=" + documentKey;
+        String redirectUrl = "http://localhost:8084/api/v1/s3/downloadFileByDocumentKey" +
+                queryParam;
+
+        response.sendRedirect(redirectUrl);
     }
 }

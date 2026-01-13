@@ -8,8 +8,7 @@ import com.insurance.policy.data.repository.ClaimTypeRepository;
 import com.insurance.policy.data.repository.DocumentTypeRepository;
 import com.insurance.policy.dto.response.*;
 import com.insurance.policy.exception.WebException;
-import com.insurance.policy.service.ClaimService;
-import com.insurance.policy.service.NotificationService;
+import com.insurance.policy.service.*;
 import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -40,10 +39,10 @@ public class ClaimServiceImpl implements ClaimService {
     private final ClaimTypeRepository claimTypeRepository;
     private final ClaimDocumentRepository claimDocumentRepository;
     private final DocumentTypeRepository documentTypeRepository;
-    private final PolicyServiceImpl policyService;
-    private final ClaimTypeServiceImpl claimTypeService;
+    private final PolicyService policyService;
+    private final ClaimTypeService claimTypeService;
     private final UserServiceImpl userService;
-    private final StorageClientServiceImpl storageClientService;
+    private final StorageClientService storageClientService;
     private final NotificationService notificationService;
     private final LogUtils logUtils;
 
@@ -77,7 +76,7 @@ public class ClaimServiceImpl implements ClaimService {
 
         List<Map<String, String>> documentList = saveClaimDocuments(claim, claimTypeId, uploadedFiles);
 
-        notificationService.notifyUser(buildNotification(requestId, null, CLAIM_UPLOAD_SUCCESS));
+        notificationService.notifyUser(buildNotification(userId, null, CLAIM_UPLOAD_SUCCESS));
         return toClaimResponse(claim, policy, documentList, claimtype);
     }
 
@@ -159,7 +158,9 @@ public class ClaimServiceImpl implements ClaimService {
                 Map<String, String> documentMap = new HashMap<>();
                 documentMap.put("documentName", doc.getDocumentType().getDocumentTypeName());
                 documentMap.put("documentUrl", doc.getDocumentUrl());
-                documentMap.put("documentKey", doc.getDocumentUrl());
+                documentMap.put("documentKey", doc.getDocumentUrl().substring(
+                        doc.getDocumentUrl().indexOf("insurance-content/"))
+                );
                 documentListMap.add(documentMap);
             }
         }

@@ -7,7 +7,7 @@ import com.insurance.policy.dto.request.BeneficiaryRequestDto;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.BeneficiaryListResponseDto;
 import com.insurance.policy.dto.response.BeneficiaryResponseDto;
-import com.insurance.policy.service.impl.web.BeneficiaryServiceImpl;
+import com.insurance.policy.service.BeneficiaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -21,7 +21,7 @@ import static com.insurance.policy.constants.GeneralConstant.LOG4j.*;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class BeneficiaryController extends BaseController {
-    private final BeneficiaryServiceImpl beneficiaryService;
+    private final BeneficiaryService beneficiaryService;
 
     @Override
     protected String getControllerName() {

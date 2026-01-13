@@ -7,7 +7,7 @@ import com.insurance.policy.dto.request.PaymentRequestDto;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.PaymentResponseDto;
 import com.insurance.policy.dto.response.PaymentSummaryResponseDto;
-import com.insurance.policy.service.impl.web.PaymentServiceImpl;
+import com.insurance.policy.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class PaymentController extends BaseController {
-    private final PaymentServiceImpl paymentService;
+    private final PaymentService paymentService;
 
     @Override
     protected String getControllerName() {

@@ -21,6 +21,6 @@ public class PolicyResponseDto {
     private Date startDate;
     private Date endDate;
     private String status;
-    private QuotationApplicationResponseDto applicationResponseDto;
-    private List<BeneficiaryDto> beneficiaryList;
+    private QuotationApplicationResponseDto quotationApplication;
+    private List<BeneficiaryDto> beneficiaries;
 }

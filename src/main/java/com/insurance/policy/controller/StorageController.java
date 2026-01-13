@@ -5,7 +5,7 @@ import com.insurance.policy.constants.ApiConstant;
 import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.UploadListResponseDto;
-import com.insurance.policy.service.impl.web.StorageClientServiceImpl;
+import com.insurance.policy.service.StorageClientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class StorageController extends BaseController {
-    private final StorageClientServiceImpl storageClientService;
+    private final StorageClientService storageClientService;
 
     @Override
     protected String getControllerName() {

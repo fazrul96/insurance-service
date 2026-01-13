@@ -12,6 +12,7 @@ import com.insurance.policy.dto.response.QuotationApplicationResponseDto;
 import com.insurance.policy.dto.response.QuotationApplicationSummaryResponseDto;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.NotificationService;
+import com.insurance.policy.service.PlanService;
 import com.insurance.policy.service.QuotationApplicationService;
 import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ import static com.insurance.policy.util.enums.NotificationTemplate.QUOTATION_CRE
 @RequiredArgsConstructor
 public class QuotationApplicationServiceImpl implements QuotationApplicationService {
     private final QuotationApplicationRepository quotationApplicationRepository;
-    private final PlanServiceImpl planService;
+    private final PlanService planService;
     private final UserServiceImpl userService;
     private final NotificationService notificationService;
     private final LogUtils logUtils;
@@ -135,6 +136,7 @@ public class QuotationApplicationServiceImpl implements QuotationApplicationServ
     public QuotationApplicationResponseDto toQuotationApplicationResponse(QuotationApplication request) {
         return QuotationApplicationResponseDto.builder()
                 .id(request.getId())
+                .nric(request.getUser().getIdNo())
                 .applicationStatus(request.getApplicationStatus())
                 .cigarettesNo(request.getCigarettesNo())
                 .countryOfBirth(request.getCountryOfBirth())

@@ -6,10 +6,11 @@ import com.insurance.policy.dto.QuotationApplicationRequestDto;
 import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.request.BeneficiaryRequestDto;
 import com.insurance.policy.dto.response.*;
-import com.insurance.policy.service.impl.web.BeneficiaryServiceImpl;
-import com.insurance.policy.service.impl.web.PolicyServiceImpl;
+import com.insurance.policy.service.BeneficiaryService;
+import com.insurance.policy.service.PolicyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,10 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping(path = "${app.privateApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
+@Tag(name = "Policy API", description = "Operations related to insurance policies")
 public class PolicyController extends BaseController {
-    private final PolicyServiceImpl policyService;
-    private final BeneficiaryServiceImpl beneficiaryService;
+    private final PolicyService policyService;
+    private final BeneficiaryService beneficiaryService;
 
     @Override
     protected String getControllerName() {

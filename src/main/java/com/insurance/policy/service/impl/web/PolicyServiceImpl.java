@@ -15,7 +15,9 @@ import com.insurance.policy.dto.response.PolicyResponseDto;
 import com.insurance.policy.dto.response.PolicySummaryResponseDto;
 import com.insurance.policy.dto.response.QuotationApplicationResponseDto;
 import com.insurance.policy.exception.WebException;
+import com.insurance.policy.service.BeneficiaryService;
 import com.insurance.policy.service.PolicyService;
+import com.insurance.policy.service.QuotationApplicationService;
 import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,8 +31,8 @@ import static com.insurance.policy.util.common.StringUtils.generateReferenceNumb
 @RequiredArgsConstructor
 public class PolicyServiceImpl implements PolicyService {
     private final PolicyRepository policyRepository;
-    private final QuotationApplicationServiceImpl quotationApplicationService;
-    private final BeneficiaryServiceImpl beneficiaryService;
+    private final QuotationApplicationService quotationApplicationService;
+    private final BeneficiaryService beneficiaryService;
     private final LogUtils logUtils;
     private static final long ONE_YEAR_MILLIS = 31_536_000_000L;
 
@@ -93,8 +95,8 @@ public class PolicyServiceImpl implements PolicyService {
         }
 
         PolicyResponseDto response = toPolicyResponse(policy);
-        response.setApplicationResponseDto(quotationApplication);
-        response.setBeneficiaryList(beneficiaryService.getBeneficiaryListByPolicyId(requestId, policyId));
+        response.setQuotationApplication(quotationApplication);
+        response.setBeneficiaries(beneficiaryService.getBeneficiaryListByPolicyId(requestId, policyId));
         return response;
     }
 
@@ -116,7 +118,7 @@ public class PolicyServiceImpl implements PolicyService {
         PolicyResponseDto policyResponseDto = toPolicyResponse(policy);
 
         application.setPlanResponseDto(planInfoDto);
-        policyResponseDto.setApplicationResponseDto(application);
+        policyResponseDto.setQuotationApplication(application);
 
         return policyResponseDto;
     }

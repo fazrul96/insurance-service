@@ -10,6 +10,8 @@ import com.insurance.policy.dto.response.BeneficiaryListResponseDto;
 import com.insurance.policy.dto.response.BeneficiaryResponseDto;
 import com.insurance.policy.exception.WebException;
 import com.insurance.policy.service.BeneficiaryService;
+import com.insurance.policy.service.NotificationService;
+import com.insurance.policy.service.ValidationService;
 import com.insurance.policy.util.common.LogUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,8 @@ import static com.insurance.policy.util.enums.NotificationTemplate.BENEFICIARY_C
 public class BeneficiaryServiceImpl implements BeneficiaryService {
     private final BeneficiaryRepository beneficiaryRepository;
     private final PolicyRepository policyRepository;
-    private final NotificationServiceImpl notificationService;
-    private final ValidationServiceImpl validationService;
+    private final NotificationService notificationService;
+    private final ValidationService validationService;
     private final LogUtils logUtils;
 
     @Override

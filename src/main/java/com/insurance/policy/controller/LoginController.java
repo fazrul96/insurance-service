@@ -7,7 +7,7 @@ import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.request.AuthRequestDto;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.AuthResponseDto;
-import com.insurance.policy.service.impl.auth.AuthServiceImpl;
+import com.insurance.policy.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "${app.publicApiPath}")
 @CrossOrigin(origins = "${app.basePath}")
 public class LoginController extends BaseController {
-    private final AuthServiceImpl authService;
+    private final AuthService authService;
 
     @Override
     protected String getControllerName() {

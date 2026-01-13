@@ -1,7 +1,6 @@
 package com.insurance.policy.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.insurance.policy.data.entity.Plan;
 import com.insurance.policy.dto.PlanInfoDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +17,7 @@ import java.util.Date;
 public class QuotationApplicationResponseDto {
     private Long id;
     private String fullName;
+    private String nric;
     private String gender;
     private String nationality;
     private String identificationNo;

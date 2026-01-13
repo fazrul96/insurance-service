@@ -48,7 +48,6 @@ public abstract class BaseController {
                 : requestId;
     }
 
-
     @ModelAttribute
     protected RequestContext requestContext(
             @RequestHeader(value = "userId", required = false) String userId,

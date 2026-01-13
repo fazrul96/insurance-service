@@ -2,6 +2,7 @@ package com.insurance.policy.service.impl.web;
 
 import com.insurance.policy.dto.BeneficiaryDto;
 import com.insurance.policy.exception.WebException;
+import com.insurance.policy.service.ValidationService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -15,7 +16,7 @@ import static com.insurance.policy.constants.GeneralConstant.MAX_BENEFICIARIES;
  * Future scalability: add more module-specific validations here as needed.
  */
 @Service
-public class ValidationServiceImpl {
+public class ValidationServiceImpl implements ValidationService {
     private static final int MAX_TOTAL_SHARE = 100;
 
     /**
