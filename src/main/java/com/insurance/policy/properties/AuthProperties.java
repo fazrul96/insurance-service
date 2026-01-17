@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@NoArgsConstructor
 @Data
-@ConfigurationProperties("okta.oauth2")
+@NoArgsConstructor
+@ConfigurationProperties(prefix = "okta.oauth2")
 public class AuthProperties {
     private String issuer;
     private String clientId;

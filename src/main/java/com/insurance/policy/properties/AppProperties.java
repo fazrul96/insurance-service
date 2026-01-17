@@ -6,9 +6,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@NoArgsConstructor
 @Data
-@ConfigurationProperties("app")
+@NoArgsConstructor
+@ConfigurationProperties(prefix = "app")
 public class AppProperties {
     private String basePath;
     private String baseFlaskPath;

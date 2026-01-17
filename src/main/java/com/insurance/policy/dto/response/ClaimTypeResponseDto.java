@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupResponseDto {
-    private String token;
-    private String email;
-    private String username;
-    private String userId;
+public class ClaimTypeResponseDto {
+    private Long claimTypeId;
+    private String claimTypeName;
+    private String claimTypeDescription;
 }

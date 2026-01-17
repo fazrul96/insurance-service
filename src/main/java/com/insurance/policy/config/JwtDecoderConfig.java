@@ -10,7 +10,6 @@ import static com.insurance.policy.constants.ApiConstant.AUTH0.JWKS_JSON;
 
 @Configuration
 public class JwtDecoderConfig {
-
     @Bean
     public JwtDecoder jwtDecoder(AuthProperties authProperties) {
         return NimbusJwtDecoder.withJwkSetUri(

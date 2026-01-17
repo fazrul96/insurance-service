@@ -100,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
-    private String fetchUserAccessToken() {
+    public String fetchUserAccessToken() {
         return auth0Client.fetchToken().getAccessToken();
     }
 

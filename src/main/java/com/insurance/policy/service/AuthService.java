@@ -11,5 +11,7 @@ public interface AuthService {
 
     AuthResponseDto loginAuth0 (String requestId, User request);
 
+    String fetchUserAccessToken();
+
     String getServiceName();
 }

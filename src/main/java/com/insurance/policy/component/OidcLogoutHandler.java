@@ -8,13 +8,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
 public class OidcLogoutHandler implements LogoutHandler {
-
     private final AuthProperties authProperties;
 
     @Override
@@ -23,20 +23,26 @@ public class OidcLogoutHandler implements LogoutHandler {
             HttpServletResponse response,
             Authentication authentication
     ) {
+        String redirectUrl = UriComponentsBuilder
+                .fromUriString(authProperties.getIssuer())
+                .path("/v2/logout")
+                .queryParam("client_id", authProperties.getClientId())
+                .queryParam("returnTo", resolveBaseUrl(request))
+                .build()
+                .toUriString();
+
         try {
-            String baseUrl = ServletUriComponentsBuilder
-                    .fromCurrentContextPath()
-                    .build()
-                    .toUriString();
-
-            String redirectUrl = authProperties.getIssuer()
-                    + "v2/logout?client_id="
-                    + authProperties.getClientId()
-                    + "&returnTo=" + baseUrl;
-
             response.sendRedirect(redirectUrl);
         } catch (IOException e) {
-            throw new IllegalStateException("OIDC logout failed", e);
+            throw new IllegalStateException("OIDC logout redirect failed", e);
         }
+    }
+
+    private String resolveBaseUrl(HttpServletRequest request) {
+        return ServletUriComponentsBuilder
+                .fromRequest(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
     }
 }

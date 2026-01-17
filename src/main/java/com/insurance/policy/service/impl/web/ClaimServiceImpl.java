@@ -77,7 +77,7 @@ public class ClaimServiceImpl implements ClaimService {
         List<Map<String, String>> documentList = saveClaimDocuments(claim, claimTypeId, uploadedFiles);
 
         notificationService.notifyUser(buildNotification(userId, null, CLAIM_UPLOAD_SUCCESS));
-        return toClaimResponse(claim, policy, documentList, claimtype);
+        return toClaimResponse(claim, policy, documentList, toClaimTypeResponse(claimtype));
     }
 
     @Override
@@ -149,7 +149,7 @@ public class ClaimServiceImpl implements ClaimService {
 
     public ClaimResponseDto getClaimDetailsByClaimId(Long claimId) {
         Claim claim = getClaimById(claimId);
-        ClaimType claimType = claimTypeService.getClaimTypeByClaimId(claimId);
+        ClaimTypeResponseDto claimTypeResponse = toClaimTypeResponse(claimTypeService.getClaimTypeByClaimId(claimId));
         List<ClaimDocument> documentList = claimTypeService.getClaimDocumentByClaimId(claimId);
 
         List<Map<String, String>> documentListMap = new ArrayList<>();
@@ -165,7 +165,7 @@ public class ClaimServiceImpl implements ClaimService {
             }
         }
 
-        return toClaimResponse(claimType, documentListMap, claim);
+        return toClaimResponse(claimTypeResponse, documentListMap, claim);
     }
 
     private Claim getClaimById(Long claimId) {
@@ -277,10 +277,18 @@ public class ClaimServiceImpl implements ClaimService {
                 .build();
     }
 
+    private ClaimTypeResponseDto toClaimTypeResponse(ClaimType claimType) {
+        return ClaimTypeResponseDto.builder()
+                .claimTypeId(claimType.getClaimTypeId())
+                .claimTypeName(claimType.getClaimTypeName())
+                .claimTypeDescription(claimType.getClaimTypeDescription())
+                .build();
+    }
+
     private ClaimResponseDto toClaimResponse(
-            ClaimType claimType, List<Map<String, String>> documentListMap, Claim claim) {
+            ClaimTypeResponseDto claimTypeResponse, List<Map<String, String>> documentListMap, Claim claim) {
         return ClaimResponseDto.builder()
-                .claimType(claimType)
+                .claimType(claimTypeResponse)
                 .documentList(documentListMap)
                 .policyNo(claim.getPolicy().getPolicyNo())
                 .claimDate(claim.getClaimDate())
@@ -289,12 +297,12 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     private ClaimResponseDto toClaimResponse(
-            Claim claim, Policy policy, List<Map<String,String>> documentList,  ClaimType claimtype) {
+            Claim claim, Policy policy, List<Map<String,String>> documentList,  ClaimTypeResponseDto claimTypeResponse) {
         return ClaimResponseDto.builder()
                 .claimId(claim.getClaimId())
                 .policyNo(policy.getPolicyNo())
                 .documentList(documentList)
-                .claimType(claimtype)
+                .claimType(claimTypeResponse)
                 .claimDate(LocalDate.now())
                 .claimStatus(claim.getClaimStatus())
                 .build();

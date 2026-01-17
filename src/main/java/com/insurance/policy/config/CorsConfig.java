@@ -1,5 +1,7 @@
 package com.insurance.policy.config;
 
+import com.insurance.policy.properties.CorsProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -8,20 +10,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static com.insurance.policy.constants.GeneralConstant.DOUBLE_ASTERISKS;
 import static com.insurance.policy.constants.GeneralConstant.SLASH;
-import static com.insurance.policy.constants.SecurityConstant.*;
 
 @Configuration
+@RequiredArgsConstructor
 public class CorsConfig {
     public static final String WILDCARD_PATH = SLASH + DOUBLE_ASTERISKS;
+    private final CorsProperties corsProperties;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(ALLOWED_ORIGINS);
-        config.setAllowedMethods(ALLOWED_METHODS);
-        config.setAllowedHeaders(ALLOWED_HEADERS);
-        config.setAllowCredentials(true);
-        config.setMaxAge(3600L);
+        config.setAllowedOrigins(corsProperties.getAllowedOrigins());
+        config.setAllowedMethods(corsProperties.getAllowedMethods());
+        config.setAllowedHeaders(corsProperties.getAllowedHeaders());
+        config.setAllowCredentials(corsProperties.isAllowCredentials());
+        config.setMaxAge(corsProperties.getMaxAge());
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(WILDCARD_PATH, config);

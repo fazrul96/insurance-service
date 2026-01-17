@@ -1,14 +1,15 @@
 package com.insurance.policy.service.impl.web;
 
+import com.insurance.policy.component.InsuranceInternalClient;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.dto.response.UploadListResponseDto;
 import com.insurance.policy.dto.response.UploadResponseDto;
 import com.insurance.policy.properties.AppProperties;
+import com.insurance.policy.properties.StorageServiceProperties;
 import com.insurance.policy.service.StorageClientService;
 import com.insurance.policy.util.common.LogUtils;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,6 @@ import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,20 +28,17 @@ import static com.insurance.policy.constants.ApiConstant.S3.UPLOAD_FILES;
 @Service
 @RequiredArgsConstructor
 public class StorageClientServiceImpl implements StorageClientService {
-    private final WebClient webClient;
     private final AppProperties appProperties;
+    private final StorageServiceProperties storageServiceProperties;
     private final LogUtils logUtils;
-
-    @Value("${storage-service.base-url}")
-    private String storageServiceBaseUrl;
-
+    private final InsuranceInternalClient insuranceClient;
     private String privateApi;
     private String publicApi;
 
     @PostConstruct
     public void init() {
-        this.publicApi = storageServiceBaseUrl + appProperties.getPublicApiPath();
-        this.privateApi = storageServiceBaseUrl + appProperties.getPrivateApiPath();
+        this.publicApi = storageServiceProperties.getBaseUrl() + appProperties.getPublicApiPath();
+        this.privateApi = storageServiceProperties.getBaseUrl() + appProperties.getPrivateApiPath();
     }
 
     @Override
@@ -65,7 +62,7 @@ public class StorageClientServiceImpl implements StorageClientService {
         logUtils.logRequest(requestId, getServiceName() + "downloadFile");
 
         String queryParam = "?documentKey=" + documentKey;
-        return webClient.get()
+        return insuranceClient.client().get()
                 .uri(this.privateApi + DOWNLOAD_FILE_BY_DOCUMENT_KEY + queryParam)
                 .header("userId", userId)
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
@@ -75,7 +72,7 @@ public class StorageClientServiceImpl implements StorageClientService {
     }
 
     private ApiResponseDto<UploadListResponseDto> processUpload(String userId, MultipartBodyBuilder builder) {
-        return webClient.post()
+        return insuranceClient.client().post()
                 .uri(this.privateApi + UPLOAD_FILES)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header("userId", userId)
