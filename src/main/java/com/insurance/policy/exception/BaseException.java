@@ -39,4 +39,3 @@ public class BaseException extends RuntimeException {
         return errorType.getHttpStatusCode();
     }
 }
-

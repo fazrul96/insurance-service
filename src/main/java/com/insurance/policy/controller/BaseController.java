@@ -1,7 +1,7 @@
 package com.insurance.policy.controller;
 
+import com.insurance.policy.constants.ApiDocDescriptionsConstant;
 import com.insurance.policy.constants.GeneralConstant;
-import com.insurance.policy.constants.MessageConstants;
 import com.insurance.policy.dto.RequestContext;
 import com.insurance.policy.dto.response.ApiResponseDto;
 import com.insurance.policy.exception.WebException;
@@ -124,7 +124,7 @@ public abstract class BaseController {
                     HttpStatus.OK,
                     HttpStatus.OK.getReasonPhrase(),
                     data,
-                    MessageConstants.HttpDescription.OK_DESC
+                    ApiDocDescriptionsConstant.OK
             );
         } catch (WebException we) {
             log.error(ERROR_LOG_PATTERN, context.getRequestId(), methodName, we.getMessage());
@@ -133,7 +133,7 @@ public abstract class BaseController {
                     context.getChannel(),
                     context.getRequestId(),
                     HttpStatus.BAD_REQUEST,
-                    MessageConstants.HttpDescription.BAD_REQUEST_DESC,
+                    ApiDocDescriptionsConstant.BAD_REQUEST,
                     null,
                     we.getMessage()
             );
@@ -144,7 +144,7 @@ public abstract class BaseController {
                     context.getChannel(),
                     context.getRequestId(),
                     HttpStatus.UNAUTHORIZED,
-                    MessageConstants.HttpDescription.UNAUTHORIZED_DESC,
+                    ApiDocDescriptionsConstant.UNAUTHORIZED,
                     null,
                     bce.getMessage()
             );
@@ -155,7 +155,7 @@ public abstract class BaseController {
                     context.getChannel(),
                     context.getRequestId(),
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    MessageConstants.HttpDescription.INTERNAL_ERROR_DESC,
+                    ApiDocDescriptionsConstant.INTERNAL_ERROR,
                     null,
                     e.getMessage()
             );

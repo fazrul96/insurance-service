@@ -17,34 +17,6 @@ public class MessageConstants {
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class HttpCodes {
-        public static final String OK = "200";
-        public static final String CREATED = "201";
-        public static final String NO_CONTENT = "204";
-        public static final String BAD_REQUEST = "400";
-        public static final String UNAUTHORIZED = "401";
-        public static final String FORBIDDEN = "403";
-        public static final String NOT_FOUND = "404";
-        public static final String CONFLICT = "409";
-        public static final String UNPROCESSABLE_ENTITY = "422";
-        public static final String INTERNAL_SERVER_ERROR = "500";
-    }
-
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class HttpDescription {
-        public static final String OK_DESC = "Request successful";
-        public static final String CREATED_DESC = "Successfully created";
-        public static final String NO_CONTENT_DESC = "No content to return";
-        public static final String BAD_REQUEST_DESC = "Invalid request input";
-        public static final String UNAUTHORIZED_DESC = "Unauthorized access";
-        public static final String FORBIDDEN_DESC = "Access forbidden";
-        public static final String NOT_FOUND_DESC = "Resource not found";
-        public static final String CONFLICT_DESC = "Conflict occurred";
-        public static final String UNPROCESSABLE_ENTITY_DESC = "Unprocessable input";
-        public static final String INTERNAL_ERROR_DESC = "Unexpected error occurred";
-    }
-
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Parameter {
         public static final String REQUEST = "request";
         public static final String REQUEST_ID = "requestId";

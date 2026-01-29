@@ -1,12 +1,11 @@
 package com.insurance.policy.util.enums;
 
 import com.insurance.policy.exception.BaseException;
+import lombok.Getter;
 
 import static com.insurance.policy.exception.BatchErrorType.GENERIC_ERROR;
 
-@SuppressWarnings({
-        "PMD.AvoidCatchingNPE",
-        "PMD.PreserveStackTrace"})
+@Getter
 public enum PaymentStatus {
     SUCCESS,
     FAILED;

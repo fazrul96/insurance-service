@@ -14,4 +14,18 @@ public final class HttpCodeConstant {
     public static final int PAYMENT_REQUIRED = HttpStatus.PAYMENT_REQUIRED.value();
     public static final int FORBIDDEN = HttpStatus.FORBIDDEN.value();
     public static final int NOT_FOUND = HttpStatus.NOT_FOUND.value();
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class HttpCodes {
+        public static final String OK = "200";
+        public static final String CREATED = "201";
+        public static final String NO_CONTENT = "204";
+        public static final String BAD_REQUEST = "400";
+        public static final String UNAUTHORIZED = "401";
+        public static final String FORBIDDEN = "403";
+        public static final String NOT_FOUND = "404";
+        public static final String CONFLICT = "409";
+        public static final String UNPROCESSABLE_ENTITY = "422";
+        public static final String INTERNAL_SERVER_ERROR = "500";
+    }
 }

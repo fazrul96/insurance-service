@@ -30,14 +30,13 @@ import static com.insurance.policy.constants.ApiConstant.S3.UPLOAD_FILES;
 public class StorageClientServiceImpl implements StorageClientService {
     private final AppProperties appProperties;
     private final StorageServiceProperties storageServiceProperties;
-    private final LogUtils logUtils;
     private final InsuranceInternalClient insuranceClient;
+    private final LogUtils logUtils;
+
     private String privateApi;
-    private String publicApi;
 
     @PostConstruct
     public void init() {
-        this.publicApi = storageServiceProperties.getBaseUrl() + appProperties.getPublicApiPath();
         this.privateApi = storageServiceProperties.getBaseUrl() + appProperties.getPrivateApiPath();
     }
 
@@ -53,7 +52,7 @@ public class StorageClientServiceImpl implements StorageClientService {
 
         MultipartBodyBuilder builder = buildMultipartBody(files, prefix);
 
-        ApiResponseDto<UploadListResponseDto> response = processUpload(userId, builder);
+        ApiResponseDto<UploadListResponseDto> response = callUploadApi(userId, builder);
         return new UploadListResponseDto(extractFilesFromResponse(response));
     }
 
@@ -62,7 +61,8 @@ public class StorageClientServiceImpl implements StorageClientService {
         logUtils.logRequest(requestId, getServiceName() + "downloadFile");
 
         String queryParam = "?documentKey=" + documentKey;
-        return insuranceClient.client().get()
+        return insuranceClient.client()
+                .get()
                 .uri(this.privateApi + DOWNLOAD_FILE_BY_DOCUMENT_KEY + queryParam)
                 .header("userId", userId)
                 .accept(MediaType.APPLICATION_OCTET_STREAM)
@@ -71,8 +71,9 @@ public class StorageClientServiceImpl implements StorageClientService {
                 .block();
     }
 
-    private ApiResponseDto<UploadListResponseDto> processUpload(String userId, MultipartBodyBuilder builder) {
-        return insuranceClient.client().post()
+    private ApiResponseDto<UploadListResponseDto> callUploadApi(String userId, MultipartBodyBuilder builder) {
+        return insuranceClient.client()
+                .post()
                 .uri(this.privateApi + UPLOAD_FILES)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .header("userId", userId)
@@ -85,7 +86,6 @@ public class StorageClientServiceImpl implements StorageClientService {
 
     private MultipartBodyBuilder buildMultipartBody(List<MultipartFile> files, String prefix) {
         MultipartBodyBuilder builder = new MultipartBodyBuilder();
-
         for (MultipartFile file : files) {
             builder.part("files", file.getResource())
                     .filename(Objects.requireNonNull(file.getOriginalFilename()))
@@ -97,9 +97,8 @@ public class StorageClientServiceImpl implements StorageClientService {
 
     private List<UploadResponseDto> extractFilesFromResponse(ApiResponseDto<UploadListResponseDto> response) {
         UploadListResponseDto data = response.getData();
-        if (data == null || data.getUploadList() == null) {
-            return Collections.emptyList();
-        }
-        return data.getUploadList();
+        return data != null && data.getUploadList() != null
+                ? data.getUploadList()
+                : Collections.emptyList();
     }
 }

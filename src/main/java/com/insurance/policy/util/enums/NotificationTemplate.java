@@ -1,48 +1,65 @@
 package com.insurance.policy.util.enums;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 
-@RequiredArgsConstructor
+@Getter
 public enum NotificationTemplate {
     PAYMENT_SUCCESS(
-            "Your payment was successful. Your policy has been created.",
             NotificationEventType.PAYMENT_SUCCESS,
+            "notification.payment.success",
             NotificationSeverity.INFO,
             "/payment/process"
     ),
+
     PAYMENT_FAILED(
-            "Payment failed, application marked as FAILED.",
             NotificationEventType.PAYMENT_FAILED,
+            "notification.payment.failed",
             NotificationSeverity.ERROR,
             "/payment/process"
     ),
+
     CLAIM_UPLOAD_SUCCESS(
-            "Your upload claim was successful.",
             NotificationEventType.CLAIM_UPLOAD_SUCCESS,
+            "notification.claim.upload.success",
             NotificationSeverity.INFO,
             "/claim/submit"
     ),
+
     BENEFICIARY_CREATED(
-            "Your beneficiary has been created.",
             NotificationEventType.BENEFICIARY_CREATED,
+            "notification.beneficiary.created",
             NotificationSeverity.INFO,
             "/policy/beneficiary"
     ),
+
     QUOTATION_CREATED(
-            "Your quotation has been created. Please complete the payment",
             NotificationEventType.QUOTATION_CREATED,
+            "notification.quotation.created",
             NotificationSeverity.WARNING,
             "/policy/create-application"
     ),
+
     POLICY_UPDATED(
-            "Your policy has been updated.",
             NotificationEventType.POLICY_UPDATED,
+            "notification.policy.updated",
             NotificationSeverity.INFO,
-            "/policy/"
+            "/policy"
     );
 
-    public final String message;
-    public final NotificationEventType eventType;
-    public final NotificationSeverity severity;
-    public final String pathPrefix;
+    private final NotificationEventType eventType;
+    private final String messageKey;
+    private final NotificationSeverity severity;
+    private final String path;
+
+    NotificationTemplate(
+            NotificationEventType eventType,
+            String messageKey,
+            NotificationSeverity severity,
+            String path
+    ) {
+        this.eventType = eventType;
+        this.messageKey = messageKey;
+        this.severity = severity;
+        this.path = path;
+    }
 }
